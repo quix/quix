@@ -25,7 +25,7 @@ class Pathname
   end
 
   def to_dos
-    restring { |t| t.gsub("/", "\\") }
+    to_s.gsub("/", "\\")
   end
 
   class << self

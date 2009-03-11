@@ -2,20 +2,24 @@
 require 'thread'
 
 module Kernel
-  def singleton_class
-    class << self
-      self
+  unless respond_to? :singleton_class
+    def singleton_class
+      class << self
+        self
+      end
     end
-  end
-
-  def let
-    yield self
   end
 
   unless respond_to? :tap
     def tap
       yield self
       self
+    end
+  end
+
+  unless respond_to? :let
+    def let
+      yield self
     end
   end
 
@@ -48,7 +52,7 @@ module Kernel
       mutex.synchronize {
         count += 1
       }
-      "#{prefix}#{count}".to_sym
+      "#{prefix}_#{count}".to_sym
     }
     private method_name
   }

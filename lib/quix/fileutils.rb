@@ -20,14 +20,22 @@ module FileUtils
     end
   end
   
-  def replace_file(file, opts = {})
+  def replace_file(file)
     old_contents = File.read(file)
     yield(old_contents).tap { |new_contents|
-      if opts[:force] or old_contents != new_contents
-        File.open(file, "w") { |output|
+      if old_contents != new_contents
+        File.open(file, "wb") { |output|
           output.print(new_contents)
         }
       end
+    }
+  end
+
+  def write_file(file)
+    yield.tap { |contents|
+      File.open(file, "wb") { |out|
+        out.print(contents)
+      }
     }
   end
 end

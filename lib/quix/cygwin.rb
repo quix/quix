@@ -1,10 +1,9 @@
 
+require 'thread'
+
 unless RUBY_PLATFORM =~ %r!cygwin!
   raise NotImplementedError, "cygwin-only module"
 end
-
-require 'fileutils'
-require 'thread'
 
 module Quix
   module Cygwin
@@ -20,16 +19,6 @@ module Quix
       path.sub(%r!/+\Z!, "")
     end
     
-    # unix2dos/dos2unix also fix \r\r\n files arising from perforce bugs
-
-    def unix2dos(string)
-      string.gsub("\r", "").gsub("\n", "\r\n")
-    end
-    
-    def dos2unix(string)
-      string.gsub("\r", "")
-    end
-
     def dos_path(unix_path)
       `cygpath -w "#{normalize_path(unix_path)}"`.chomp
     end
@@ -41,24 +30,14 @@ module Quix
     
     def dos_pwd_env
       Thread.exclusive {
-        orig = ENV["PWD"]
+        previous = ENV["PWD"]
         ENV["PWD"] = dos_path(Dir.pwd)
         begin
           yield
         ensure
-          ENV["PWD"] = orig
+          ENV["PWD"] = previous
         end
       }
-    end
-    
-    def avoid_dll(file)
-      temp_file = file + ".avoiding-link"
-      FileUtils.mv(file, temp_file)
-      begin
-        yield
-      ensure
-        FileUtils.mv(temp_file, file)
-      end
     end
   end
 end
