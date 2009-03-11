@@ -2,13 +2,9 @@
 require 'rbconfig'
 require 'fileutils'
 require 'find'
-require 'fileutils'
-require 'quix/vars'
-  
+
 module Quix
   class SimpleInstaller
-    include Quix::Vars
-
     def initialize
       dest_root = Config::CONFIG["sitelibdir"]
       sources = []
@@ -49,7 +45,12 @@ module Quix
             end
           }
   
-          acc << locals_to_hash {%{source dest install uninstall}}
+          acc << {
+            :source => source,
+            :dest => dest,
+            :install => install,
+            :uninstall => uninstall,
+          }
         end
       }
     end
