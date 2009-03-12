@@ -2,31 +2,33 @@
 require 'quix/kernel'
 
 module Enumerable
-  def inject_with_index(*args)
-    index = 0
-    inject(*args) { |acc, elem|
-      yield(acc, elem, index).tap {
-        index += 1
+  polite do
+    def inject_with_index
+      index = 0
+      inject(*args) { |acc, elem|
+        yield(acc, elem, index).tap {
+          index += 1
+        }
       }
-    }
-  end
+    end
 
-  def map_with_index
-    Array.new.tap { |result|
-      each_with_index { |elem, index|
-        result << yield(elem, index)
+    def map_with_index
+      Array.new.tap { |result|
+        each_with_index { |elem, index|
+          result << yield(elem, index)
+        }
       }
-    }
-  end
+    end
 
-  def select_with_index
-    Array.new.tap { |result|
-      each_with_index { |elem, index|
-        if yield(elem, index)
-          result << elem
-        end
+    def select_with_index
+      Array.new.tap { |result|
+        each_with_index { |elem, index|
+          if yield(elem, index)
+            result << elem
+          end
+        }
       }
-    }
+    end
   end
 end
 

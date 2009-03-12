@@ -156,7 +156,11 @@ describe "ReverseRange" do
       before(:each) do
         String.class_eval {
           def pred
-            self[0].pred.chr
+            if RUBY_VERSION < "1.9.0"
+              self[0].pred.chr
+            else
+              self[0].ord.pred.chr
+            end
           end
         }
       end

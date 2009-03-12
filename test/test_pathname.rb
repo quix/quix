@@ -25,4 +25,11 @@ class TestPathname < Test::Unit::TestCase
       Pathname.new("b/c/d.h"),
       Pathname.join(*path.explode[1..-1]))
   end
+
+  def test_restring
+    path = Pathname.new "a/b"
+    path_xy = path.restring { |t| t.tr("ab", "xy") }
+    assert_equal(Pathname.new("x/y"), path_xy)
+    assert_equal("x/y", path_xy.to_s)
+  end
 end

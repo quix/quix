@@ -1,8 +1,12 @@
 
+require 'quix/module'
+
 class Dir
   class << self
-    def empty?(dir)
-      entries(dir).join == "..."
+    polite do
+      def empty?(dir)
+        entries(dir).join == "..."
+      end
     end
   end
 end

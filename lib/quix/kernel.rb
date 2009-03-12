@@ -1,8 +1,9 @@
 
+require 'quix/module'
 require 'thread'
 
 module Kernel
-  unless respond_to? :singleton_class
+  unless instance_method_defined? :singleton_class
     def singleton_class
       class << self
         self
@@ -10,14 +11,14 @@ module Kernel
     end
   end
 
-  unless respond_to? :tap
+  unless instance_method_defined? :tap
     def tap
       yield self
       self
     end
   end
 
-  unless respond_to? :let
+  unless instance_method_defined? :let
     def let
       yield self
     end
@@ -25,45 +26,45 @@ module Kernel
 
   private
 
-  def system_or_raise(*args)
-    unless system(*args)
-      raise "system(*#{args.inspect}) failed with exit status #{$?.exitstatus}"
+  unless instance_method_defined? :system_or_raise
+    def system_or_raise(*args)
+      unless system(*args)
+        raise "system(*#{args.inspect}) failed with status #{$?.exitstatus}"
+      end
     end
   end
-
+  
   let {
-    method_name = :gensym
-    mutex = Mutex.new
-    count = 0
-
-    define_method(method_name) { |*args|
-      # workaround for no default args
-      prefix = (
+    name = :gensym
+    unless instance_method_defined? name
+      mutex = Mutex.new
+      count = 0
+      define_method(name) { |*args|
+        mutex.synchronize {
+          count += 1
+        }
         case args.size
         when 0
-          :G
+          :"G#{count}"
         when 1
-          args.first
+          :"|#{args.first}#{count}|"
         else
           raise ArgumentError, "wrong number of arguments (#{args.size} for 1)"
         end
-      )
-
-      mutex.synchronize {
-        count += 1
       }
-      "#{prefix}_#{count}".to_sym
-    }
-    private method_name
+      private name
+    end
   }
 
-  def loop_with(done = gensym, restart = gensym)
-    catch(done) {
-      while true
-        catch(restart) {
-          yield(done, restart)
-        }
-      end
-    }
+  unless instance_method_defined? :loop_with
+    def loop_with(done = gensym, again = gensym)
+      catch(done) {
+        while true
+          catch(again) {
+            yield(done, again)
+          }
+        end
+      }
+    end
   end
 end

@@ -1,13 +1,22 @@
 
+require 'quix/module'
+
 class Array
-  def rest
-    self[1..-1]
+  polite do
+    def rest
+      self[1..-1]
+    end
+    
+    def inject1(&block)
+      tail.inject(head, &block)
+    end
+  end
+  
+  unless instance_method_defined? :head
+    alias_method :head, :first
   end
 
-  def inject1(&block)
-    tail.inject(head, &block)
+  unless instance_method_defined? :tail
+    alias_method :tail, :rest
   end
-
-  alias_method :head, :first
-  alias_method :tail, :rest
 end
