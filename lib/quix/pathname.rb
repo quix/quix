@@ -13,13 +13,9 @@ class Pathname
     end
 
     def explode
-      to_s.split(SEPARATOR_PAT).map { |path|
+      to_s.split(::Pathname::SEPARATOR_PAT).map { |path|
         Pathname.new path
       }
-    end
-
-    def =~(regexp)
-      to_s =~ regexp
     end
 
     def restring
@@ -28,6 +24,16 @@ class Pathname
 
     def to_dos
       to_s.gsub("/", "\\")
+    end
+  end
+
+  #
+  # special case: ruby-1.9 has undef on Pathname#=~
+  # including a module with =~ will NOT make it defined
+  #
+  unless instance_method_defined? :=~
+    def =~(regexp)
+      to_s =~ regexp
     end
   end
 
