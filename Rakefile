@@ -4,9 +4,6 @@ task :default => :test
 
 task :test do
   require 'test/all.rb'
-  Dir["test/test_*.rb"].each { |file|
-    require file
-  }
 end
 
 task :install do

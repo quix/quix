@@ -106,7 +106,7 @@ module Quix
     @argument_cache = ThreadLocal.new
 
     def private__eval_config_code
-      eval %Q{
+      eval %{
         #{Vars.argument_cache.value}
 
         [local_variables, binding]

@@ -10,7 +10,7 @@ class String
   }.each_pair { |source, dest|
     unless instance_method_defined? dest
       # use eval for < 1.8.7 compatibility
-      eval %Q{
+      eval %{
         def #{dest}(*args)
           if block_given?
             #{source}(*args) {
