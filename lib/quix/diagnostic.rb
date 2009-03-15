@@ -1,6 +1,4 @@
 
-require 'quix/kernel'
-
 module Quix
   module Diagnostic
     module_function
@@ -11,9 +9,9 @@ module Quix
       end
       if block
         expression = block.call
-        eval(expression, block.binding).tap { |result|
-          stream.printf("%-16s => %s\n", expression, result.inspect)
-        }
+        result = eval(expression, block.binding)
+        stream.printf("%-16s => %s\n", expression, result.inspect)
+        result
       end
     end
 

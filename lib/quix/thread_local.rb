@@ -1,9 +1,11 @@
 
 require 'thread'
-require 'quix/kernel'
+require 'quix/generator'
 
 module Quix
   class ThreadLocal
+    include Generator
+
     #
     # The block should create a new object (if not, the returned
     # object will be shared across threads, which rather defeats the

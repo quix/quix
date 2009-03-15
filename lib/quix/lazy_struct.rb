@@ -1,6 +1,6 @@
 
 require 'ostruct'
-require 'quix/kernel'
+require 'quix/ext'
 
 module Quix
   #
@@ -11,6 +11,8 @@ module Quix
     # For mixing into an existing OpenStruct instance singleton class.
     #
     module Mixin
+      include Ext
+
       #
       # &block is evaluated when this attribute is requested.  The
       # same result is returned for subsquent calls, until the field
@@ -23,16 +25,16 @@ module Quix
           # Define a special reader method in the singleton class.
           #
           define_method(reader) {
-            block.call.tap { |value|
-              #
-              # The value has been computed.  Replace this method with a
-              # one-liner giving the value.
-              #
-              singleton.instance_eval {
-                remove_method(reader)
-                define_method(reader) { value }
-              }
+            value = block.call
+            #
+            # The value has been computed.  Replace this method with a
+            # one-liner giving the value.
+            #
+            singleton.instance_eval {
+              remove_method(reader)
+              define_method(reader) { value }
             }
+            value
           }
           
           #

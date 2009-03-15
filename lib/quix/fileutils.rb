@@ -1,6 +1,7 @@
 
 require 'tmpdir'
-require 'quix/kernel'
+require 'quix/module'
+require 'quix/ext'
 
 module FileUtils
   polite do
@@ -23,7 +24,7 @@ module FileUtils
   
     def replace_file(file)
       old_contents = File.read(file)
-      yield(old_contents).tap { |new_contents|
+      yield(old_contents).extend(Quix::Ext).tap { |new_contents|
         if old_contents != new_contents
           File.open(file, "wb") { |output|
             output.print(new_contents)
@@ -33,7 +34,7 @@ module FileUtils
     end
 
     def write_file(file)
-      yield.tap { |contents|
+      yield.extend(Quix::Ext).tap { |contents|
         File.open(file, "wb") { |out|
           out.print(contents)
         }

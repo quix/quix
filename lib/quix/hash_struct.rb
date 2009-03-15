@@ -1,5 +1,5 @@
 
-require 'quix/kernel'
+require 'quix/ext'
 require 'ostruct'
 
 module Quix
@@ -14,7 +14,7 @@ module Quix
     
     class << self
       def recursive_new(hash)
-        new.tap { |s|
+        new.extend(Quix::Ext).tap { |s|
           hash.each_pair { |key, value|
             s.send(
               :"#{key}=", 
