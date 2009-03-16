@@ -25,14 +25,9 @@ module Quix
       end
 
       def trace(desc = nil, &block)
-        if desc
-          show("#{desc}.".sub(%r!\.\.+\Z!, ""), STDERR, &block)
-        else
-          show(nil, STDERR, &block)
-        end
+        show(desc, STDERR, &block)
       end
     else
-      # non-$DEBUG
       def debug ; end
       def debugging? ; end
       def trace(*args) ; end
