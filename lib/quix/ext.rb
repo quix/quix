@@ -1,6 +1,4 @@
 
-require 'quix/module'
-
 module Quix
   module Ext
     unless respond_to? :singleton_class

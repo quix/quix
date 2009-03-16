@@ -2,6 +2,7 @@ $LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
 
 require 'test/unit'
 require 'quix/vars'
+require 'quix/ruby'
 
 class TestVars < Test::Unit::TestCase
   include Quix::Vars
@@ -116,8 +117,8 @@ class TestVars < Test::Unit::TestCase
   end
 
   def test_pull_ivs
-    assert_equal(nil, @x)
-    assert_equal(nil, @y)
+    assert_equal(nil, Quix::Ruby.no_warnings { @x })
+    assert_equal(nil, Quix::Ruby.no_warnings { @y })
     pull_ivs { A.new }
     assert_equal(22, @x)
     assert_equal(33, @y)
