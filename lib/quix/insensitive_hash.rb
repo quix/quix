@@ -4,7 +4,7 @@ class InsensitiveHash
 
   class << self
     def from_hash(hash)
-      InsensitiveHash.new.tap { |result|
+      new.tap { |result|
         hash.each_pair { |key, value|
           result[key] = value
         }
@@ -16,16 +16,19 @@ class InsensitiveHash
     @hash = Hash.new
   end
 
+  def has_key?(key)
+    @hash.has_key?(to_neutral_key(key))
+  end
+
+  def size
+    @hash.size
+  end
+
   def ==(other)
-    if other.is_a? InsensitiveHash
-      other_hash = other.instance_eval { @hash }
-      if @hash.size == other_hash.size
-        @hash.each_pair { |key, data|
-          canonical_key = other_hash.to_canonical_key(key)
-          unless other_hash.has_key? canonical_key
-            return false
-          end
-          unless other_hash[canonical_key] == data.value
+    if other.is_a? Hash
+      if @hash.size == other.size
+        each_pair { |key, value|
+          unless other.has_key?(key) and other[key] == value
             return false
           end
         }
@@ -39,18 +42,18 @@ class InsensitiveHash
   end
 
   def store(key, value)
-    @hash[to_canonical_key(key)] = InsenstiveHashData.new(key, value)
+    @hash[to_neutral_key(key)] = InsenstiveHashData.new(key, value)
     value
   end
 
   alias_method :[]=, :store
 
   def fetch(key, default = nil, &block)
-    @hash.fetch(to_canonical_key(key), default).fetch(&block).value
+    @hash.fetch(to_neutral_key(key), default).fetch(&block).value
   end
 
   def [](key)
-    t = @hash[to_canonical_key(key)]
+    t = @hash[to_neutral_key(key)]
     t and t.value
   end
 
@@ -102,6 +105,8 @@ class InsensitiveHash
     }
   end
 
+  alias_method :update, :merge!
+
   def merge(hash)
     dup.tap { |result|
       result.merge!(hash)
@@ -112,11 +117,9 @@ class InsensitiveHash
     InsensitiveHash.from_hash(@hash)
   end
 
-  alias_method :update, :merge!
-
   InsenstiveHashData = Struct.new(:key, :value)
 
-  def to_canonical_key(key)
+  def to_neutral_key(key)
     key.downcase
   end
 end
