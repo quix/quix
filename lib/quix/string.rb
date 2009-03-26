@@ -1,5 +1,12 @@
 
 class String
+  def captures(re)
+    result = match(re)
+    if result and not result.captures.empty?
+      yield(*result.captures)
+    end
+  end
+
   {
     :gsub => :gsubx,
     :gsub! => :gsubx!,
