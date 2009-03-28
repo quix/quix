@@ -1,20 +1,38 @@
 
 require 'thread'
-require 'quix/generator'
+require 'quix/symbol_generator'
 
 module Quix
+  #
+  # Thread-local variable.
+  #
   class ThreadLocal
-    include Generator
+    include SymbolGenerator
 
     #
-    # The block should create a new object (if not, the returned
-    # object will be shared across threads, which rather defeats the
-    # purpose).
+    # If +value+ is called before +value=+ then the result of
+    # &default is used.
     #
-    def initialize(prefix = nil, &default)
-      @name = gensym(prefix)
-      @accessed = gensym(prefix)
+    # &default normally creates a new object, otherwise the returned
+    # object will be shared across threads.
+    #
+    def initialize(&default)
+      @name = gensym
+      @accessed = gensym
       @default = default
+    end
+
+    #
+    # Reset to just-initialized state for all threads.
+    #
+    def clear(&default)
+      Thread.exclusive {
+        @default = default
+        Thread.list.each { |thread|
+          thread[@accessed] = nil
+          thread[@name] = nil
+        }
+      }
     end
     
     def value
@@ -34,7 +52,7 @@ module Quix
 
     class << self
       def accessor_module(name, subclass = self, &block)
-        var = subclass.new(name, &block)
+        var = subclass.new(&block)
         Module.new {
           define_method(name) {
             var.value
@@ -44,31 +62,12 @@ module Quix
           }
         }
       end
-
-      def wrap_methods(names)
-        Class.new(ThreadLocal) {
-          names.each { |name|
-            # TODO: jettison 1.8.6, remove eval and use |&block|
-            eval %{
-              def #{name}(*args, &block)
-                value.send(:'#{name}', *args, &block)
-              end
-            }
-          }
-        }
-      end
       
-      def wrap_methods_of(klass, opts = {})
-        include_super = opts[:include_super] || true
-        names = klass.instance_methods(include_super).reject { |name|
-          name =~ %r!\A__! or name.to_sym == :object_id
+      def reader_module(name, subclass = self, &block)
+        accessor_module(name, subclass, &block).instance_eval {
+          remove_method "#{name}="
+          self
         }
-        wrap_methods(names)
-      end
-
-      def wrap_new(klass, opts = {}, &block)
-        create = block || lambda { klass.new }
-        wrap_methods_of(klass, opts).new(&create)
       end
     end
   end
