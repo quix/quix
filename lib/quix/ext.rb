@@ -21,5 +21,14 @@ module Quix
         yield self
       end
     end
+
+    unless respond_to? :try
+      alias_method :try, :__send__
+      NilClass.class_eval {
+        def try(*args, &block)
+          nil
+        end
+      }
+    end
   end
 end
