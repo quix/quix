@@ -1,5 +1,6 @@
 
 require 'pathname'
+require 'quix/dir'
 
 class Pathname
   def ext(new_ext)
@@ -11,8 +12,8 @@ class Pathname
   end
 
   def explode
-    to_s.split(::Pathname::SEPARATOR_PAT).map { |path|
-      Pathname.new path
+    to_s.split(SEPARATOR_PAT).map { |path|
+      self.class.new path
     }
   end
 
@@ -26,6 +27,10 @@ class Pathname
 
   def =~(regexp)
     to_s =~ regexp
+  end
+
+  def empty_directory?
+    Dir.empty?(self.to_s)
   end
 
   class << self
