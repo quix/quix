@@ -15,22 +15,20 @@ module Quix
       end
     end
 
-    if $DEBUG
-      def debug
+    def debug
+      if $DEBUG
         yield
       end
+    end
 
-      def debugging?
-        true
-      end
+    def debugging?
+      $DEBUG
+    end
 
-      def trace(desc = nil, &block)
+    def trace(desc = nil, &block)
+      if $DEBUG
         show(desc, STDERR, &block)
       end
-    else
-      def debug ; end
-      def debugging? ; end
-      def trace(*args) ; end
     end
   end
 end
