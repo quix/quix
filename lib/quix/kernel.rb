@@ -1,11 +1,10 @@
 
-require 'quix/ext'
-require 'quix/loop_with'
-require 'quix/diagnostic'
+module Kernel
+  private
 
-class Object
-  include Quix::Ext
-  include Quix::LoopWith
-  include Quix::Diagnostic
+  def system_or_raise(*args)
+    unless system(*args)
+      raise "system(*#{args.inspect}) failed with status #{$?.exitstatus}"
+    end
+  end
 end
-
