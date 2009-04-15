@@ -13,12 +13,16 @@ task :depgraph, :root do |t, args|
   nodes = Hash.new
   edges = Hash.new
 
+  to_node_name = lambda { |str|
+    str.gsub('/', '__').gsub('.', '_')
+  }
+
   build_tree = lambda { |parent_object|
-    parent = parent_object.name
+    parent = to_node_name.call(parent_object.name)
     nodes[parent] ||= graph.add_node(parent)
     parent_object.prerequisites.map { |unresolved_child|
       child_object = Rake.application[unresolved_child, parent_object.scope]
-      child = child_object.name
+      child = to_node_name.call(child_object.name)
       edge_name = [parent, child].join("----")
       unless edges.has_key?(edge_name)
         edges[edge_name] = true
