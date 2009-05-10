@@ -3,7 +3,7 @@ require 'thread'
 
 module Quix
   module SymbolGenerator
-    @count = 'a'
+    @count = '`'
     @mutex = Mutex.new
     @recycled = []
     @object_id_to_sym_list = Hash.new
@@ -16,7 +16,7 @@ module Quix
         @mutex.synchronize {
           if @recycled.empty?
             @count.succ!
-            "|#{@count}".to_sym
+            "~#{@count}".to_sym
           else
             @recycled.shift
           end
