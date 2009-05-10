@@ -11,7 +11,7 @@ class TestDiagnostic < Test::Unit::TestCase
     desc = "zzz"
     a = 33
     show(desc, out) {%{a}}
-    lines = out.string.lines.map { |t| t.chomp }
+    lines = out.string.split("\n").map { |t| t.chomp }
     assert_equal desc, lines[0]
     assert_match %r!\A\s*a\s+=>\s*#{a}\s*\Z!, lines[1]
   end
