@@ -17,14 +17,12 @@ module Quix
       end
     }.call
 
-    module_function
-
     class << self
       def run(*args)
         cmd = [EXECUTABLE, *args]
         unless system(*cmd)
           cmd_str = cmd.map { |t| "'#{t}'" }.join(", ")
-          raise "ruby(#{cmd_str}) failed with status #{$?.exitstatus}"
+          raise "system(#{cmd_str}) failed with status #{$?.exitstatus}"
         end
       end
       
