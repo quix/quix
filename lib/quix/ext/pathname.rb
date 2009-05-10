@@ -1,6 +1,6 @@
 
 require 'pathname'
-require 'quix/dir'
+require 'quix/ext/dir'
 
 class Pathname
   def ext(new_ext)

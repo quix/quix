@@ -1,12 +1,14 @@
 require File.dirname(__FILE__) + "/common"
 
-require 'quix/lazy_struct'
+require 'quix/lazy_attribute'
+require 'ostruct'
 
-class TestLazyStruct < Test::Unit::TestCase
+class TestLazyAttribute < Test::Unit::TestCase
+  class Stuff
+    include Quix::LazyAttribute
+  end
+
   def common(s)
-    s.f = 33
-    assert_equal(33, s.f)
-
     n = 0
     s.attribute(:f) {
       n += 1
@@ -20,13 +22,13 @@ class TestLazyStruct < Test::Unit::TestCase
   end
 
   def test_1
-    common(Quix::LazyStruct.new)
+    common(Stuff.new)
   end
 
   def test_2
     s = OpenStruct.new
     class << s
-      include Quix::LazyStruct::Mixin
+      include Quix::LazyAttribute
     end
     common(s)
   end

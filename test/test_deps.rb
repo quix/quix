@@ -1,6 +1,5 @@
-$LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
+require File.dirname(__FILE__) + "/common"
 
-require 'test/unit'
 require 'quix/ruby'
 
 class TestDeps < Test::Unit::TestCase

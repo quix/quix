@@ -1,6 +1,5 @@
-$LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
+require File.dirname(__FILE__) + "/common"
 
-require 'test/unit'
 require 'quix/hash_struct'
 
 class TestHashStruct < Test::Unit::TestCase

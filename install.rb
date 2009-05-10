@@ -1,3 +1,3 @@
-$LOAD_PATH.unshift "./lib"
-require 'quix/simple_installer'
-Quix::SimpleInstaller.new.run
+$LOAD_PATH.unshift "devel"
+require 'jumpstart/simple_installer'
+Jumpstart::SimpleInstaller.new.run

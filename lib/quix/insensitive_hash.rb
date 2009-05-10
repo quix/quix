@@ -1,17 +1,19 @@
 
-require 'enumerator'
+require 'enumerator' unless RUBY_VERSION < "1.8.7"
 
 module Quix
   class InsensitiveHash
     include Enumerable
 
+    InsenstiveHashData = Struct.new(:key, :value)
+
     class << self
       def from_hash(hash)
-        new.tap { |result|
-          hash.each_pair { |key, value|
-            result[key] = value
-          }
+        result = new
+        hash.each_pair { |key, value|
+          result[key] = value
         }
+        result
       end
 
       def [](*args)
@@ -132,42 +134,39 @@ module Quix
     end
 
     def keys
-      Array.new.tap { |result|
-        each_key { |key|
-          result << key
-        }
+      result = Array.new
+      each_key { |key|
+        result << key
       }
+      result
     end
     
     def values
-      Array.new.tap { |result|
-        each_value { |value|
-          result << value
-        }
+      result = Array.new
+      each_value { |value|
+        result << value
       }
+      result
     end
 
     def merge!(hash)
-      self.tap {
-        hash.each_pair { |key, value|
-          self[key] = value
-        }
+      hash.each_pair { |key, value|
+        self[key] = value
       }
+      self
     end
 
     alias_method :update, :merge!
 
     def merge(hash)
-      dup.tap { |result|
-        result.merge!(hash)
-      }
+      result = dup
+      result.merge!(hash)
+      result
     end
 
     def dup
       InsensitiveHash.from_hash(@hash)
     end
-
-    InsenstiveHashData = Struct.new(:key, :value)
 
     alias_method :store, :[]=
 

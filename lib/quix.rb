@@ -2,6 +2,7 @@
 require 'quix/ext/array'
 require 'quix/ext/dir'
 require 'quix/ext/kernel'
+require 'quix/ext/module'
 require 'quix/ext/object'
 require 'quix/ext/pathname'
 require 'quix/ext/string'

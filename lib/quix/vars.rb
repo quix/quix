@@ -1,13 +1,10 @@
 
-require 'quix/ext'
 require 'quix/thread_local'
 require 'quix/ruby'
 require 'ostruct'
 
 module Quix
   module Vars
-    include Ext
-
     module_function
 
     def eval_locals(code_with_locals, &block)
@@ -28,19 +25,19 @@ module Quix
     end
 
     def locals_to_hash(&block)
-      Hash.new.extend(Ext).tap { |hash|
-        eval_locals(block) { |name, value|
-          hash[name.to_sym] = value
-        }
+      hash = Hash.new
+      eval_locals(block) { |name, value|
+        hash[name.to_sym] = value
       }
+      hash
     end
 
     def config_to_hash(code)
-      Hash.new.extend(Ext).tap { |hash|
-        each_config_pair(code) { |name, value|
-          hash[name] = value
-        }
+      hash = Hash.new
+      each_config_pair(code) { |name, value|
+        hash[name] = value
       }
+      hash
     end
     
     def each_config_pair(code, &block)
@@ -81,7 +78,7 @@ module Quix
         else
           args
         end
-      singleton_class.instance_eval {
+      (class << self ; self ; end).instance_eval {
         added = Array.new
         begin
           readers.each { |reader|

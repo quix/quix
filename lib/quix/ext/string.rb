@@ -14,7 +14,7 @@ class String
     :sub! => :subx!,
   }.each_pair { |source, dest|
     # use eval for < 1.8.7 compatibility
-    eval %{
+    eval <<-end_eval
       def #{dest}(*args)
         if block_given?
           #{source}(*args) {
@@ -24,7 +24,7 @@ class String
           #{source}(*args)
         end
       end
-    }
+    end_eval
   }
 end
 

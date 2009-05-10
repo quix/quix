@@ -1,42 +1,40 @@
 
 require 'tmpdir'
-require 'quix/kernel'
 
 module FileUtils
   module_function
 
-  def rename_file(file, new_name)
+  alias_method :mv__original, :mv
+
+  def mv(source, dest, options = {})
     #
     # For case-insensitive systems, we must move the file elsewhere
     # before changing case.
     #
-    temp = File.join(Dir.tmpdir, File.basename(file))
-    mv(file, temp)
+    temp = File.join(Dir.tmpdir, File.basename(source))
+    mv__original(source, temp, options)
     begin
-      mv(temp, new_name)
+      mv__original(temp, dest, options)
     rescue
-      mv(temp, file)
+      mv__original(temp, source, options)
       raise
     end
   end
 
   def replace_file(file)
     old_contents = File.read(file)
-    yield(old_contents).tap { |new_contents|
-      if old_contents != new_contents
-        File.open(file, "wb") { |output|
-          output.print(new_contents)
-        }
-      end
+    new_contents = yield(old_contents)
+    File.open(file, "wb") { |out|
+      out.print(new_contents)
     }
+    new_contents
   end
 
   def write_file(file)
-    yield.tap { |contents|
-      File.open(file, "wb") { |out|
-        out.print(contents)
-      }
+    contents = yield
+    File.open(file, "wb") { |out|
+      out.print(contents)
     }
+    contents
   end
- end
-
+end

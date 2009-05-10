@@ -16,7 +16,7 @@ module Quix
         @mutex.synchronize {
           if @recycled.empty?
             @count.succ!
-            :"|#{@count}"
+            "|#{@count}".to_sym
           else
             @recycled.shift
           end

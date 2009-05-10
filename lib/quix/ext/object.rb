@@ -4,6 +4,6 @@
   tap
   let
   try
-].each { |elem|
-  require 'quix/ext/object/#{elem}' unless respond_to? elem
+].each { |method|
+  require "quix/ext/object/#{method}" unless respond_to? method
 }

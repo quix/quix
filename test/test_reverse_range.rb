@@ -1,13 +1,8 @@
-$LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
+require File.dirname(__FILE__) + "/common"
 
 require 'quix/reverse_range'
-
-begin
-  require 'spec'
-rescue LoadError
-  require 'rubygems'
-  require 'spec'
-end
+require 'rubygems'
+require 'spec'
 
 if RUBY_VERSION < "1.8.7"
   require 'enumerator'

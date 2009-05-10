@@ -3,7 +3,7 @@ module Quix
   module Diagnostic
     module_function
 
-    def show(desc = nil, stream = STDOUT, &block)
+    def show(desc = nil, stream = $stdout, &block)
       if desc
         stream.puts(desc)
       end
@@ -27,7 +27,7 @@ module Quix
 
     def trace(desc = nil, &block)
       if $DEBUG
-        show(desc, STDERR, &block)
+        show(desc, $stderr, &block)
       end
     end
   end

@@ -1,17 +1,16 @@
-$LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
+require File.dirname(__FILE__) + "/common"
 
-require 'test/unit'
-require 'quix/this_line_once'
+require 'quix/once'
 
 class TestOnce < Test::Unit::TestCase
-  include Quix::ThisLineOnce
+  include Quix::Once
 
   def f
     rand
   end
 
   def g
-    this_line_once { rand }
+    once { rand }
   end
 
   def test_once
@@ -25,7 +24,7 @@ class TestOnce < Test::Unit::TestCase
     assert_equal(x, z)
 
     assert_raises(RuntimeError) {
-      eval("this_line_once { }")
+      eval("once { rand }")
     }
   end
 end
