@@ -4,6 +4,8 @@ require "rubygems"
 require "spec"
 require "test/unit"
 require "fileutils"
+require "rake"
+RakeFileUtils.verbose_flag = false
 
 module TestDataDir
   DATA_DIR = "testdata"
