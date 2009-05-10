@@ -17,6 +17,9 @@ class TestLazyStruct < Test::Unit::TestCase
       assert_equal(44, s.f)
     }
     assert_equal(1, n)
+
+    s.f = 77
+    assert_equal 77, s.f
   end
 
   def test_lazy_struct_1
