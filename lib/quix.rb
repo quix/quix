@@ -1,17 +1,16 @@
 
-require 'quix/ext'
+require 'quix/ext/array'
+require 'quix/ext/dir'
+require 'quix/ext/kernel'
+require 'quix/ext/object'
+require 'quix/ext/pathname'
+require 'quix/ext/string'
+
 require 'quix/loop_with'
 require 'quix/diagnostic'
 require 'quix/vars'
 
-require 'quix/pathname'
-require 'quix/array'
-require 'quix/dir'
-require 'quix/string'
-require 'quix/kernel'
-
 class Object
-  include Quix::Ext
   include Quix::LoopWith
   include Quix::Diagnostic
   include Quix::Vars
