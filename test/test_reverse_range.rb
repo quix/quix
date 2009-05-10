@@ -1,8 +1,6 @@
 require File.dirname(__FILE__) + "/common"
 
 require 'quix/reverse_range'
-require 'rubygems'
-require 'spec'
 
 if RUBY_VERSION < "1.8.7"
   require 'enumerator'

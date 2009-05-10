@@ -21,11 +21,11 @@ class TestLazyAttribute < Test::Unit::TestCase
     assert_equal(1, n)
   end
 
-  def test_1
+  def test_lazy_attribute_1
     common(Stuff.new)
   end
 
-  def test_2
+  def test_lazy_attribute_2
     s = OpenStruct.new
     class << s
       include Quix::LazyAttribute

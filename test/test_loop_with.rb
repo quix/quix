@@ -5,7 +5,7 @@ require "quix/loop_with"
 class TestLoopWith < Test::Unit::TestCase
   include Quix::LoopWith
 
-  def test_1
+  def test_loop_with_1
     memo = Array.new
     result = loop_with(:leave, :again) {
       memo.push :data
@@ -20,7 +20,7 @@ class TestLoopWith < Test::Unit::TestCase
     assert_equal((1..3).map { :data }, memo)
   end
 
-  def test_2
+  def test_loop_with_2
     memo = Array.new
     result = loop_with(:leave) {
       memo.push :data
@@ -30,7 +30,7 @@ class TestLoopWith < Test::Unit::TestCase
     assert_equal((1..1).map { :data }, memo)
   end
 
-  def test_3
+  def test_loop_with_3
     memo = Array.new
     loop_with(nil, :again) {
       memo.push :data
@@ -43,7 +43,7 @@ class TestLoopWith < Test::Unit::TestCase
     assert_equal((1..3).map { :data }, memo)
   end
 
-  def test_4
+  def test_loop_with_4
     memo = Array.new
     loop_with {
       memo.push :data

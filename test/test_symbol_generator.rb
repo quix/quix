@@ -21,7 +21,7 @@ class TestSymbolGenerator < Test::Unit::TestCase
     end
   end
 
-  def test_1
+  def test_symbol_generator_1
     histogram = Hash.new { |hash, key| hash[key] = 0 }
 
     [false, true].each { |track|

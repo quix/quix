@@ -6,7 +6,7 @@ require "quix/diagnostic"
 class TestDiagnostic < Test::Unit::TestCase
   include Quix::Diagnostic
 
-  def test_1
+  def test_diagnostic_1
     out = StringIO.new
     desc = "zzz"
     a = 33
@@ -16,14 +16,14 @@ class TestDiagnostic < Test::Unit::TestCase
     assert_match %r!\A\s*a\s+=>\s*#{a}\s*\Z!, lines[1]
   end
 
-  def test_2
+  def test_diagnostic_2
     out = StringIO.new
     a = 33
     show(nil, out) {%{a}}
     assert_match %r!\A\s*a\s+=>\s*#{a}\s*\Z!, out.string
   end
 
-  def test_3
+  def test_diagnostic_3
     prev_debug = $DEBUG
     prev_stderr = $stderr
     begin

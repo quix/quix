@@ -12,9 +12,9 @@ class TestDeps < Test::Unit::TestCase
     }.each { |file|
       unless file =~ %r!cygwin! and RUBY_PLATFORM !~ %r!cygwin!
         Dir.chdir(root) {
-          assert(
-            Quix::Ruby.run("-r", file, "-e", ""),
-            "error requiring: '#{file}'")
+          assert_nothing_raised {
+            Quix::Ruby.run("-r", file, "-e", "")
+          }
         }
       end
     }

@@ -19,11 +19,11 @@ class TestLazyStruct < Test::Unit::TestCase
     assert_equal(1, n)
   end
 
-  def test_1
+  def test_lazy_struct_1
     common(Quix::LazyStruct.new)
   end
 
-  def test_2
+  def test_lazy_struct_2
     s = OpenStruct.new
     class << s
       include Quix::LazyStruct::Mixin
