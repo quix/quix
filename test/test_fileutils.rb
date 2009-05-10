@@ -37,4 +37,35 @@ class TestFileUtils < Test::Unit::TestCase
       assert_equal "c", File.read("g")
     }
   end
+
+  def test_mv_error
+    source = "x"
+    begin
+      dest = "#{DATA_DIR}/y"
+      temp = File.join(Dir.tmpdir, File.basename(source))
+      thread = Thread.new {
+        loop {
+          rm_f temp
+        }
+      }
+      assert_raises(Errno::ENOENT) {
+        loop {
+          touch source
+          mv source, dest
+        }
+      }
+      thread.kill
+      
+      rm_rf DATA_DIR
+      touch source
+      assert_raises(Errno::ENOENT) {
+        mv source, dest
+      }
+      
+      # for teardown
+      mkdir DATA_DIR
+    ensure
+      rm_f source
+    end
+  end
 end
