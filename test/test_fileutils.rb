@@ -6,10 +6,10 @@ class TestFileUtils < Test::Unit::TestCase
   include FileUtils
   include TestDataDir
 
-  def test_mv
+  def test_rename_file
     Dir.chdir(DATA_DIR) {
       touch "x"
-      mv "x", "X"
+      rename_file "x", "X"
       assert_equal ["X"], Dir["*"] 
     }
   end
@@ -38,7 +38,7 @@ class TestFileUtils < Test::Unit::TestCase
     }
   end
 
-  def test_mv_error
+  def test_rename_file_error
     source = "x"
     begin
       dest = "#{DATA_DIR}/y"
@@ -51,7 +51,7 @@ class TestFileUtils < Test::Unit::TestCase
       assert_raises(Errno::ENOENT) {
         loop {
           touch source
-          mv source, dest
+          rename_file source, dest
         }
       }
       thread.kill
@@ -59,7 +59,7 @@ class TestFileUtils < Test::Unit::TestCase
       rm_rf DATA_DIR
       touch source
       assert_raises(Errno::ENOENT) {
-        mv source, dest
+        rename_file source, dest
       }
       
       # for teardown

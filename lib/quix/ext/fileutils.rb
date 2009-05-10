@@ -5,19 +5,17 @@ require 'tmpdir'
 module FileUtils
   module_function
 
-  alias_method :mv__original, :mv
-
-  def mv(source, dest, options = {})
+  def rename_file(source, dest)
     #
     # For case-insensitive systems, we must move the file elsewhere
     # before changing case.
     #
     temp = File.join(Dir.tmpdir, File.basename(source))
-    mv__original(source, temp, options)
+    mv(source, temp)
     begin
-      mv__original(temp, dest, options)
+      mv(temp, dest)
     rescue
-      mv__original(temp, source, options)
+      mv(temp, source)
       raise
     end
   end
