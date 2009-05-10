@@ -6,14 +6,7 @@ module Quix
     module_function
 
     def once(&block)
-      caller_index = (
-        if defined?(RUBY_ENGINE)
-          2
-        else
-          # presumably 1.8 MRI
-          0
-        end
-      )
+      caller_index = defined?(RUBY_ENGINE) ? 2 : 0
       line = eval("caller", block.binding)[caller_index]
       if line =~ %r!\(eval\)!
         raise "`once' called inside `eval'"
