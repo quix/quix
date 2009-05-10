@@ -84,7 +84,8 @@ module Quix
           readers.each { |reader|
             if caller_self.respond_to?(reader)
               raise(
-                "Reader '#{reader}' already exists in #{caller_self.inspect}")
+                "Reader `#{reader}' already defined in `#{caller_self.inspect}'"
+              )
             end
             define_method(reader) {
               hash[reader]
@@ -117,11 +118,8 @@ module Quix
       target.instance_eval {
         hash.each_pair { |name, value|
           ivar = "@#{name}"
-          existing_value = Ruby.no_warnings {
-            instance_variable_get(ivar)
-          }
-          unless existing_value.nil?
-            raise "instance variable already set: #{name}"
+          if instance_variable_defined? ivar
+            raise "instance variable already defined: `#{ivar}'"
           end
           instance_variable_set(ivar, value)
         }

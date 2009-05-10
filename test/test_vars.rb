@@ -67,6 +67,18 @@ class TestVars < Test::Unit::TestCase
       assert_equal(b.object_id, hash[:b].object_id)
       assert_raise(NameError) { c }
     }
+
+    error = assert_raises(RuntimeError) {
+      Class.new {
+        attr_reader :x
+        def initialize
+          @x = 99
+          hash = { :x => 33, :y => 44 }
+          Quix::Vars.with_readers(hash) { }
+        end
+      }.new
+    }
+    assert_match %r!already defined!, error.message
   end
 
   def test_locals_to_ivs
@@ -155,5 +167,26 @@ class TestVars < Test::Unit::TestCase
     assert_equal(hash[:d].object_id, hash[:d_object_id])
     assert_equal(hash[:e].object_id, hash[:e_object_id])
     assert_equal(hash[:f].object_id, hash[:f_object_id])
+  end
+
+  def test_error
+    obj = Class.new {
+      def initialize
+        hash = { :x => 33 }
+        Quix::Vars.hash_to_ivs { hash }
+      end
+    }.new
+    assert_equal 33, obj.instance_eval { @x }
+
+    error = assert_raises(RuntimeError) {
+      Class.new {
+        def initialize
+          hash = { :x => 33 }
+          @x = 99
+          Quix::Vars.hash_to_ivs { hash }
+        end
+      }.new
+    }
+    assert_match %r!already defined!, error.message
   end
 end
