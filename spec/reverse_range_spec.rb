@@ -1,6 +1,8 @@
-require File.dirname(__FILE__) + "/common"
+$LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
 
-require 'quix/reverse_range'
+require "quix/reverse_range"
+require "rubygems"
+require "spec"
 
 if RUBY_VERSION < "1.8.7"
   require 'enumerator'
@@ -213,6 +215,4 @@ describe "reversible()" do
     lambda { reversible(Object.new) }.should raise_error
   end
 end
-
-
 

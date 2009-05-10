@@ -1,10 +1,10 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
 
-require "rubygems"
-require "spec"
-require "test/unit"
 require "fileutils"
+require "test/unit"
+require "rubygems"
 require "rake"
+
 RakeFileUtils.verbose_flag = false
 
 module TestDataDir

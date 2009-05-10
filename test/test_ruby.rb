@@ -14,7 +14,7 @@ class TestRuby < Test::Unit::TestCase
     }
     assert File.exist?("#{DATA_DIR}/z")
     assert_raises(RuntimeError) {
-      Ruby.run("-e", "$stderr.close ; raise")
+      Ruby.run("-e", "exit 1")
     }
   end
 

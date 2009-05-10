@@ -25,10 +25,10 @@ class TestModule < Test::Unit::TestCase
       include mod
     }
 
-    assert klass.instance_methods.include?("g")
-    assert klass.instance_methods.include?("h")
-    assert_equal false, klass.instance_methods.include?("f")
-    assert_equal false, klass.instance_methods.include?("i")
+    assert klass.instance_methods.map { |t| t.to_s}.include?("g")
+    assert klass.instance_methods.map { |t| t.to_s}.include?("h")
+    assert_equal false, klass.instance_methods.map { |t| t.to_s}.include?("f")
+    assert_equal false, klass.instance_methods.map { |t| t.to_s}.include?("i")
 
     test = self
 
