@@ -7,6 +7,7 @@ require 'quix/ext/object'
 require 'quix/ext/pathname'
 require 'quix/ext/string'
 
+require 'quix/assert'
 require 'quix/loop_with'
 require 'quix/diagnostic'
 require 'quix/vars'
@@ -15,5 +16,6 @@ class Object
   include Quix::LoopWith
   include Quix::Diagnostic
   include Quix::Vars
+  include Quix::Assert
 end
 
