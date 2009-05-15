@@ -1,18 +1,28 @@
 
+require 'pp'
+
 module Quix
   module Diagnostic
     module_function
 
-    def show(desc = nil, stream = $stdout, &block)
+    def show__private(inspect, format, desc, stream, &block)
       if desc
         stream.puts(desc)
       end
       if block
         expression = block.call
         result = eval(expression, block.binding)
-        stream.printf("%-16s => %s\n", expression, result.inspect)
+        stream.printf(format, expression, result.send(inspect))
         result
       end
+    end
+
+    def show(desc = nil, stream = $stdout, width = 16, &block)
+      show__private(:inspect, "%-#{width}s => %s\n", desc, stream, &block)
+    end
+
+    def show_pp(desc = nil, stream = $stdout, &block)
+      show__private(:pretty_inspect, "%s:\n%s\n", desc, stream, &block)
     end
 
     def debug
