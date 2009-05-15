@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + "/common"
 
-unless defined?(RUBY_ENGINE) and RUBY_ENGINE == "jruby"
+require 'rbconfig'
+
+if Config::CONFIG["host"] =~ %r!darwin!
   require "quix/symbol_generator"
 
   #
