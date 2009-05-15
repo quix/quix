@@ -57,7 +57,7 @@ describe "Synopsis" do
 end
 
 describe "A forward-pointing Range (3..7) with r.exclude_end? == false" do
-  setup do
+  before :all do
     @range = 3..7
   end
 
@@ -66,7 +66,7 @@ describe "A forward-pointing Range (3..7) with r.exclude_end? == false" do
 end
 
 describe "A backward-pointing Range (7..3) with r.exclude_end? == false" do
-  setup do
+  before :all do
     @range = 7..3
   end
 
@@ -74,7 +74,7 @@ describe "A backward-pointing Range (7..3) with r.exclude_end? == false" do
 end
 
 describe "A forward-pointing Range (3...7) with r.exclude_end? == true" do
-  setup do
+  before :all do
     @range = 3...7
   end
 
@@ -84,7 +84,7 @@ describe "A forward-pointing Range (3...7) with r.exclude_end? == true" do
 end
     
 describe "A backward-pointing Range (7...3) with r.exclude_end? == true" do
-  setup do
+  before :all do
     @range = 7...3
   end
 
@@ -94,7 +94,7 @@ describe "A backward-pointing Range (7...3) with r.exclude_end? == true" do
 end
 
 describe "ReverseRange" do
-  setup do
+  before :all do
     @range = ReverseRange.new(7, 3)
   end
 
