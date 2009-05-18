@@ -1,4 +1,6 @@
 
+require 'enumerator' if RUBY_VERSION <= "1.8.6"
+
 require 'quix/ext/array'
 require 'quix/ext/dir'
 require 'quix/ext/kernel'
@@ -8,14 +10,14 @@ require 'quix/ext/pathname'
 require 'quix/ext/string'
 
 require 'quix/assert'
-require 'quix/loop_with'
 require 'quix/diagnostic'
+require 'quix/loop_with'
 require 'quix/vars'
 
 class Object
-  include Quix::LoopWith
-  include Quix::Diagnostic
-  include Quix::Vars
   include Quix::Assert
+  include Quix::Diagnostic
+  include Quix::LoopWith
+  include Quix::Vars
 end
 
