@@ -48,6 +48,7 @@ class TestInsensitiveHash < Test::Unit::TestCase
     assert_block { u != t }
 
     assert_block { s != 33 }
+    assert_block { s != :zzz }
 
     assert_raises(ArgumentError) {
       InsensitiveHash.new(1) { }

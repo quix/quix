@@ -62,7 +62,7 @@ module Quix
     end
 
     def ==(other)
-      if other.is_a?(InsensitiveHash) or other.is_a?(Hash)
+      begin
         if @hash.size == other.size
           each_pair { |key, value|
             unless other.has_key?(key) and other[key] == value
@@ -73,7 +73,7 @@ module Quix
         else
           false
         end
-      else
+      rescue NoMethodError
         false
       end
     end
@@ -117,11 +117,7 @@ module Quix
 
     def delete(key, &block)
       if result = @hash.delete(to_neutral_key(key), &block)
-        if result.is_a? DataPair
-          result.value
-        else
-          result
-        end
+        result.value rescue result
       end
     end
     
@@ -173,11 +169,7 @@ module Quix
           "wrong number of arguments (#{args.size + 1} for 2)"
         end
       )
-      if result.is_a? DataPair
-        result.value
-      else
-        result
-      end
+      result.value rescue result
     end
 
     def has_key?(key)
