@@ -1,11 +1,25 @@
 
-require 'enumerator' unless RUBY_VERSION < "1.8.7"
-
 module Quix
   class InsensitiveHash
     include Enumerable
 
-    InsenstiveHashData = Struct.new(:key, :value)
+    #######################################################
+    # InsensitiveHash-specific implementation
+
+    DataPair = Struct.new(:key, :value)
+
+    def to_neutral_key(key)
+      key.downcase rescue key
+    end
+
+    def dup
+      result = InsensitiveHash.new
+      each_pair { |key, value|
+        result[key] = value
+      }
+      result.taint if self.tainted?
+      result
+    end
 
     class << self
       def from_hash(hash)
@@ -15,18 +29,40 @@ module Quix
         }
         result
       end
+    end
 
+    #######################################################
+    # Hash implementation
+
+    class << self
       def [](*args)
         from_hash(Hash[*args])
       end
     end
 
-    def initialize
+    def initialize(*args, &block)
       @hash = Hash.new
+      @default_proc = block
+      @default = nil
+
+      if block
+        unless args.empty?
+          raise ArgumentError, "wrong number of arguments"
+        end
+      else
+        case args.size
+        when 0
+        when 1
+          @default = args.first
+        else
+          raise ArgumentError,
+          "wrong number of arguments (#{args.size + 1} for 2)"
+        end
+      end
     end
 
     def ==(other)
-      if other.is_a? Hash
+      if other.is_a?(InsensitiveHash) or other.is_a?(Hash)
         if @hash.size == other.size
           each_pair { |key, value|
             unless other.has_key?(key) and other[key] == value
@@ -43,51 +79,66 @@ module Quix
     end
 
     def [](key)
-      t = @hash[to_neutral_key(key)]
-      t and t.value
+      if data = @hash[to_neutral_key(key)]
+        data.value
+      elsif @default
+        @default
+      elsif @default_proc
+        @default_proc.call(self, key)
+      elsif method(:default).arity == 1
+        default(key)
+      else
+        nil
+      end
     end
 
     def []=(key, value)
-      @hash[to_neutral_key(key)] = InsenstiveHashData.new(key, value)
+      @hash[to_neutral_key(key)] = DataPair.new(key, value)
       value
     end
 
     def clear
       @hash.clear
+      self
     end
 
     def default
-      @hash.default
+      @default
     end
 
     def default=(obj)
-      @hash.default = obj
+      @default_proc = nil
+      @default = obj
     end
 
     def default_proc
-      @hash.default_proc
+      @default_proc
     end
 
     def delete(key, &block)
-      @hash.delete(to_neutral_key(key), &block)
+      if result = @hash.delete(to_neutral_key(key), &block)
+        if result.is_a? DataPair
+          result.value
+        else
+          result
+        end
+      end
     end
     
     def delete_if
-      if block_given?
-        each_pair { |key, value|
-          if yield(key, value)
-            @hash.delete(to_neutral_key(key))
-          end
-        }
-      else
-        to_enum(:delete_if)
-      end
+      dup.each_pair { |key, value|
+        if yield(key, value)
+          @hash.delete(to_neutral_key(key))
+        end
+      }
+      self
     end
 
     def each
-      @hash.each_value { |data|
-        yield data.key, data.value
+      @hash.each_value { |pair|
+        yield pair.key, pair.value
       }
+      self
     end
 
     def each_key
@@ -108,30 +159,73 @@ module Quix
       @hash.empty?
     end
 
-    def eql?
-    end
-
-    def include?(key)
-      @hash.include?(to_neutral_key(key))
-    end
-
-    alias_method :has_key, :include?
-
-    def size
-      @hash.size
-    end
-
+    alias_method :eql?, :==
+    
     def fetch(key, *args, &block)
-      case args.size
-      when 0
-        @hash.fetch(to_neutral_key(key), &block)
-      when 1
-        @hash.fetch(to_neutral_key(key), args.first)
-      else
-        raise ArgumentError,
+      result = (
+        case args.size
+        when 0
+          @hash.fetch(to_neutral_key(key), &block)
+        when 1
+          @hash.fetch(to_neutral_key(key), args.first)
+        else
+          raise ArgumentError,
           "wrong number of arguments (#{args.size + 1} for 2)"
-      end.value
+        end
+      )
+      if result.is_a? DataPair
+        result.value
+      else
+        result
+      end
     end
+
+    def has_key?(key)
+      @hash.has_key?(to_neutral_key(key))
+    end
+
+    def has_value?(target)
+      each_value { |value|
+        if target == value
+          return true
+        end
+      }
+      false
+    end
+
+    def hash
+      @hash.hash
+    end
+
+    alias_method :include?, :has_key?
+
+    def index(target)
+      each_pair { |key, value|
+        if target == value
+          return key
+        end
+      }
+      nil
+    end
+
+    # indexes, indices deprecated
+
+    def initialize_copy(hash)
+      delete_if { true }
+      hash.each_pair { |key, value|
+        self[key] = value
+      }
+    end
+
+    def inspect
+      to_hash.inspect
+    end
+
+    def invert
+      to_hash.invert
+    end
+
+    alias_method :key?, :has_key?
 
     def keys
       result = Array.new
@@ -140,12 +234,16 @@ module Quix
       }
       result
     end
-    
-    def values
-      result = Array.new
-      each_value { |value|
-        result << value
-      }
+
+    def length
+      @hash.length
+    end
+
+    alias_method :member?, :has_key?
+
+    def merge(hash)
+      result = dup
+      result.merge!(hash)
       result
     end
 
@@ -156,22 +254,89 @@ module Quix
       self
     end
 
-    alias_method :update, :merge!
+    def rehash
+      @hash.rehash
+      self
+    end
 
-    def merge(hash)
+    def reject(&block)
       result = dup
-      result.merge!(hash)
+      result.delete_if(&block)
       result
     end
 
-    def dup
-      InsensitiveHash.from_hash(@hash)
+    def reject!(&block)
+      changed = false
+      dup.each_pair { |key, value|
+        if yield(key, value)
+          @hash.delete(to_neutral_key(key))
+          changed = true
+        end
+      }
+      if changed
+        self
+      else
+        nil
+      end
+    end
+
+    alias_method :replace, :initialize_copy
+
+    public :replace
+
+    def select(&block)
+      to_a.select(&block)
+    end
+
+    def shift
+      key, pair = @hash.shift
+      [pair.key, pair.value]
+    end
+    
+    alias_method :size, :length
+
+    def sort(&block)
+      to_a.sort(&block)
     end
 
     alias_method :store, :[]=
 
-    def to_neutral_key(key)
-      key.downcase
+    def to_a
+      result = Array.new
+      each_pair { |key, value|
+        result << [key, value]
+      }
+      result
+    end  
+
+    def to_hash
+      result = Hash.new
+      each_pair { |key, value|
+        result[key] = value
+      }
+      result
+    end
+
+    def to_s
+      to_hash.to_s
+    end
+
+    alias_method :update, :merge!
+
+    alias_method :value?, :has_value?
+
+    def values
+      result = Array.new
+      each_value { |value|
+        result << value
+      }
+      result
+    end
+
+    def values_at(*keys)
+      keys.map { |key|
+        self[key]
+      }
     end
   end
 end
