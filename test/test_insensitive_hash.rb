@@ -78,7 +78,7 @@ class TestInsensitiveHash < Test::Unit::TestCase
 
   def test_hash
     x = from_hash({1=>2, 2=>4, 3=>6})
-    y = from_hash({1, 2, 2, 4, 3, 6})
+    y = from_hash({1=>2, 2=>4, 3=>6})
 
     assert_equal(2, x[1])
 
@@ -426,8 +426,9 @@ class TestInsensitiveHash < Test::Unit::TestCase
   end
 
   def test_fetch
-    assert_raise(IndexError) { @cls[].fetch(1) }
-    assert_raise(IndexError) { @h.fetch('gumby') }
+    exception = RUBY_VERSION < "1.9.0" ? IndexError : KeyError
+    assert_raise(exception) { @cls[].fetch(1) }
+    assert_raise(exception) { @h.fetch('gumby') }
     assert_equal('gumbygumby', @h.fetch('gumby') {|k| k * 2 })
     assert_equal('pokey', @h.fetch('gumby', 'pokey'))
 
@@ -665,12 +666,20 @@ class TestInsensitiveHash < Test::Unit::TestCase
   end
 
   def test_to_s
+    expect = lambda { |t|
+      if RUBY_VERSION < "1.9.0"
+        t.to_a.join
+      else
+        t.inspect
+      end
+    }
+      
     h = @cls[ 1 => 2, "cat" => "dog", 1.5 => :fred ]
-    assert_equal(h.to_a.join, h.to_s)
+    assert_equal(expect.call(h), h.to_s)
     $, = ":"
-    assert_equal(h.to_a.join, h.to_s)
+    assert_equal(expect.call(h), h.to_s)
     h = @cls[]
-    assert_equal(h.to_a.join, h.to_s)
+    assert_equal(expect.call(h), h.to_s)
     $, = nil
   end
 
@@ -709,7 +718,9 @@ class TestInsensitiveHash < Test::Unit::TestCase
     assert_equal([], expected - vals)
   end
 
-  def test_hash_hash
-    assert_equal({0=>2,11=>1}.hash, {11=>1,0=>2}.hash)
+  if RUBY_VERSION > "1.8.6"
+    def test_hash_hash
+      assert_equal({0=>2,11=>1}.hash, {11=>1,0=>2}.hash)
+    end
   end
 end
