@@ -7,7 +7,7 @@ require File.dirname(__FILE__) + "/common"
 
 require 'quix/insensitive_hash'
 
-class TestHash < Test::Unit::TestCase
+class TestInsensitiveHash < Test::Unit::TestCase
   InsensitiveHash = Quix::InsensitiveHash
 
   def from_hash(hash)
