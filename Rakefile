@@ -1,6 +1,5 @@
-$LOAD_PATH.unshift "devel"
 
-require 'jumpstart'
+require 'devel/jumpstart'
 
 Jumpstart.new('quix') do |s|
   s.developer('James M. Lawrence', 'quixoticsycophant@gmail.com')
