@@ -9,19 +9,21 @@ class TestObject < Test::Unit::TestCase
   end
 
   def test_tap
-    ret = "a".tap { |t|
-      assert_equal "a", t
+    value = Object.new
+    result = value.tap { |t|
+      assert_equal value.object_id, t.object_id
       nil
     }
-    assert_equal "a", ret
+    assert_equal value.object_id, result.object_id
   end
 
   def test_let
-    ret = "a".let { |t|
-      assert_equal "a", t
-      "b"
+    value = Object.new
+    result = value.let { |t|
+      assert_equal value.object_id, t.object_id
+      "z"
     }
-    assert_equal "b", ret
+    assert_equal "z", result
   end
 
   def test_try

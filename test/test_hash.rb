@@ -22,4 +22,22 @@ class TestHash < Test::Unit::TestCase
     }
     assert_equal %w[y x z], memo
   end
+
+  def test_hash_of_array
+    h = Hash.of Array
+    assert h.empty?
+    assert h[:x].is_a?(Array)
+    assert_block { not h.empty? }
+    h[:x] << 33
+    assert_equal [33], h[:x]
+  end
+
+  def test_hash_of_hashes
+    h = Hash.of Hash
+    assert h.empty?
+    assert h[:x].is_a?(Hash)
+    assert_block { not h.empty? }
+    h[:x][:y] = 33
+    assert_equal 33, h[:x][:y]
+  end
 end
