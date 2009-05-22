@@ -18,7 +18,7 @@ class Pathname
   end
 
   def restring
-    Pathname.new(yield(to_s))
+    self.class.new(yield(to_s))
   end
 
   def to_dos
@@ -35,7 +35,7 @@ class Pathname
 
   class << self
     def join(*paths)
-      Pathname.new File.join(*paths)
+      new File.join(*paths)
     end
   end
 end
