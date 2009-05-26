@@ -2,7 +2,7 @@ $LOAD_PATH.unshift File.dirname(__FILE__) + "/../lib"
 
 require "quix/reverse_range"
 require "rubygems"
-require "spec"
+require "spec/autorun"
 
 if RUBY_VERSION < "1.8.7"
   require 'enumerator'
