@@ -10,7 +10,7 @@ module Quix
         stream.puts(desc)
       end
       if block
-        expression = block.call
+        expression = block.call.strip
         result = eval(expression, block.binding)
         stream.printf(format, expression, result.send(inspect))
         result
