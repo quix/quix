@@ -36,4 +36,8 @@ module FileUtils
     }
     contents
   end
+
+  def read_file(file)
+    File.open(file, "rb") { |f| f.read }
+  end
 end

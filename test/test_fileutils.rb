@@ -41,6 +41,14 @@ if Config::CONFIG["host"] =~ %r!darwin!
       }
     end
 
+    def test_read_file
+      Dir.chdir(DATA_DIR) {
+        data = "\033\044\012"
+        write_file("h") { data }
+        assert_equal data, read_file("h")
+      }
+    end
+
     def test_rename_file_error
       source = "x"
       begin
