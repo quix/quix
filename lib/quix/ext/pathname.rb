@@ -21,6 +21,10 @@ class Pathname
     }
   end
 
+  def slice(range)
+    self.class.join(explode[range])
+  end
+
   def restring
     self.class.new(yield(to_s))
   end

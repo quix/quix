@@ -50,4 +50,13 @@ class TestPathname < Test::Unit::TestCase
       Pathname.join(*path.explode[1..-1])
     )
   end
+
+  def test_slice
+    assert_equal Pathname("a/b/c").slice(0..-1), Pathname("a/b/c")
+    assert_equal Pathname("a/b/c").slice(1..-1), Pathname("b/c")
+    assert_equal Pathname("a/b/c").slice(1..2), Pathname("b/c")
+    assert_equal Pathname("a/b/c").slice(0..1), Pathname("a/b")
+    assert_equal Pathname("a/b/c").slice(0..0), Pathname("a")
+    assert_equal Pathname("a/b/c").slice(0...0), Pathname("")
+  end
 end
