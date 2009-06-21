@@ -1,7 +1,5 @@
 
 require 'quix/thread_local'
-require 'quix/ruby'
-require 'ostruct'
 
 module Quix
   module Vars
