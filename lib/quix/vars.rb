@@ -5,11 +5,9 @@ module Quix
   module Vars
     module_function
 
-    def eval_locals(code_with_locals, &block)
-      code_with_locals.call.split(%r!\s+!).map { |name|
-        name.strip
-      }.each { |name|
-        block.call(name, eval(name, code_with_locals.binding))
+    def eval_locals(names_block)
+      names_block.call.split.each { |name|
+        yield name, eval(name, names_block.binding)
       }
     end
 
@@ -30,14 +28,6 @@ module Quix
       hash
     end
 
-    def config_to_hash(code)
-      hash = Hash.new
-      each_config_pair(code) { |name, value|
-        hash[name] = value
-      }
-      hash
-    end
-    
     def each_config_pair(code, &block)
       Vars.argument_cache.value = code
       vars, bind = private__eval_config_code
@@ -46,6 +36,14 @@ module Quix
       }
     end
 
+    def config_to_hash(code)
+      hash = Hash.new
+      each_config_pair(code) { |name, value|
+        hash[name] = value
+      }
+      hash
+    end
+    
     def pull_ivs(&block)
       source = block.call
       hash = block.call.instance_variables.inject(Hash.new) { |acc, iv|
