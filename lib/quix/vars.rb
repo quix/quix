@@ -56,37 +56,6 @@ module Quix
       hash_to_ivs(hash, *hash.keys)
     end
 
-    def with_readers(hash, *args, &block)
-      caller_self = eval("self", block.binding)
-      readers =
-        if args.empty?
-          hash.keys
-        else
-          args
-        end
-      (class << self ; self ; end).instance_eval {
-        added = Array.new
-        begin
-          readers.each { |reader|
-            if caller_self.respond_to?(reader)
-              raise(
-                "Reader `#{reader}' already defined in `#{caller_self.inspect}'"
-              )
-            end
-            define_method(reader) {
-              hash[reader]
-            }
-            added << reader
-          }
-          block.call
-        ensure
-          added.each { |reader|
-            remove_method(reader)
-          }
-        end
-      }
-    end
-
     class << self
       attr_accessor :argument_cache
     end

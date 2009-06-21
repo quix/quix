@@ -41,47 +41,6 @@ class TestVars < Test::Unit::TestCase
     assert_nothing_raised { hash_to_locals { nil } }
   end
 
-  def test_with_readers
-    hash = {
-      :a => 33,
-      :b => Object.new,
-      :c => lambda { hash[:a] + 11 },
-    }
-
-    assert_raise(NameError) { a }
-    assert_raise(NameError) { b }
-    assert_raise(NameError) { c }
-
-    with_readers(hash) {
-      assert_equal(a.object_id, hash[:a].object_id)
-      assert_equal(b.object_id, hash[:b].object_id)
-      assert_equal(c.object_id, hash[:c].object_id)
-    }
-
-    assert_raise(NameError) { a }
-    assert_raise(NameError) { b }
-    assert_raise(NameError) { c }
-
-    with_readers(hash, :a, :b) {
-      assert_equal(a.object_id, hash[:a].object_id)
-      assert_equal(b.object_id, hash[:b].object_id)
-      assert_raise(NameError) { c }
-    }
-
-    error = assert_raises(RuntimeError) {
-      Class.new {
-        include Quix::Vars
-        attr_reader :x
-        def initialize
-          @x = 99
-          hash = { :x => 33, :y => 44 }
-          with_readers(hash) { }
-        end
-      }.new
-    }
-    assert_match %r!already defined!, error.message
-  end
-
   def test_locals_to_ivs
     a = 33
     b = Object.new
