@@ -12,8 +12,8 @@ module Quix
     def hash_to_locals(&block)
       if hash = block.call
         hash.each_pair { |name, value|
-          Vars.argument_cache.value = value
-          eval("#{name} = #{Vars.name}.argument_cache.value", block.binding)
+          Private.argument_cache.value = value
+          eval("#{name} = #{Private.name}.argument_cache.value", block.binding)
         }
       end
     end
@@ -27,9 +27,9 @@ module Quix
     end
 
     def each_config_pair(code, &block)
-      Vars.argument_cache.value = code
-      vars, bind = private__eval_config_code
-      vars.each { |var|
+      Private.argument_cache.value = code
+      locals, bind = Private.eval_code
+      locals.each { |var|
         yield(var.to_sym, eval(var.to_s, bind))
       }
     end
@@ -65,17 +65,21 @@ module Quix
       }
     end
 
-    class << self
-      attr_accessor :argument_cache
-    end
-    @argument_cache = ThreadLocal.new
+    module Private
+      @argument_cache = ThreadLocal.new
+      class << self
+        attr_accessor :argument_cache
+        def eval_code
+          code = <<-__b516c3a760b9758a47463bdb3c316bab
+            lambda {
+              #{::Quix::Vars::Private.argument_cache.value}
 
-    def private__eval_config_code
-      eval %{
-        #{Vars.argument_cache.value}
-
-        [local_variables, binding]
-      }
+              [local_variables, binding]
+            }.call
+          __b516c3a760b9758a47463bdb3c316bab
+          eval(code, TOPLEVEL_BINDING)
+        end
+      end
     end
   end
 end
