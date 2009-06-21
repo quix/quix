@@ -1,6 +1,7 @@
 
 require 'pathname'
 require 'quix/ext/dir'
+require 'quix/ext/windows/pathname' if File::ALT_SEPARATOR == "\\"
 
 class Pathname
   def ext(new_ext)
@@ -35,27 +36,6 @@ class Pathname
 
   def empty_directory?
     Dir.empty?(self.to_s)
-  end
-
-  if File::ALT_SEPARATOR == "\\"
-    def to_dos
-      restring { |s|
-        s.gsub("/", File::ALT_SEPARATOR)
-      }
-    end
-  end
-
-  if File::ALT_SEPARATOR
-    #
-    # bug: Pathname("x:\\a\\b\\c").cleanpath #=> #<Pathname:x:\a/b/c>
-    # fix: Pathname("x:\\a\\b\\c").cleanpath #=> #<Pathname:x:/a/b/c>
-    #
-    alias_method :quix_original_cleanpath, :cleanpath
-    def cleanpath
-      quix_original_cleanpath.restring { |s|
-        s.gsub(File::ALT_SEPARATOR, "/")
-      }
-    end
   end
 
   class << self
