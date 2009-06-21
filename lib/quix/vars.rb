@@ -3,8 +3,6 @@ require 'quix/thread_local'
 
 module Quix
   module Vars
-    module_function
-
     def eval_locals(names_block)
       names_block.call.split.each { |name|
         yield name, eval(name, names_block.binding)

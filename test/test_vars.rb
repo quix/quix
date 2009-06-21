@@ -70,11 +70,12 @@ class TestVars < Test::Unit::TestCase
 
     error = assert_raises(RuntimeError) {
       Class.new {
+        include Quix::Vars
         attr_reader :x
         def initialize
           @x = 99
           hash = { :x => 33, :y => 44 }
-          Quix::Vars.with_readers(hash) { }
+          with_readers(hash) { }
         end
       }.new
     }
@@ -171,19 +172,21 @@ class TestVars < Test::Unit::TestCase
 
   def test_error
     obj = Class.new {
+      include Quix::Vars
       def initialize
         hash = { :x => 33 }
-        Quix::Vars.hash_to_ivs { hash }
+        hash_to_ivs { hash }
       end
     }.new
     assert_equal 33, obj.instance_eval { @x }
 
     error = assert_raises(RuntimeError) {
       Class.new {
+        include Quix::Vars
         def initialize
           hash = { :x => 33 }
           @x = 99
-          Quix::Vars.hash_to_ivs { hash }
+          hash_to_ivs { hash }
         end
       }.new
     }
