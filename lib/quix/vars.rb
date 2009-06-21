@@ -56,6 +56,15 @@ module Quix
       hash_to_ivs(hash, *hash.keys)
     end
 
+    def hash_to_readers(hash, *ivs)
+      hash_to_ivs(hash, *ivs)
+      (class << self ; self ; end).class_eval {
+        ivs.each { |iv|
+          attr_reader iv.to_sym
+        }
+      }
+    end
+
     class << self
       attr_accessor :argument_cache
     end

@@ -76,11 +76,40 @@ class TestVars < Test::Unit::TestCase
     assert_equal(hash[:d].object_id, @d.object_id)
     assert_equal(hash[:e].object_id, @e.object_id)
     assert_equal(hash[:f].object_id, @f.object_id)
+    assert_equal(hash[:g].object_id, @g.object_id)
 
-    assert_equal(hash[:g], nil)
-    assert_equal(hash[:g].object_id, nil.object_id)
+    assert_equal(nil, hash[:g])
+    assert_equal(nil.object_id, @g.object_id)
 
-    assert_equal(hash[:f].call, 44)
+    assert_equal(44, hash[:f].call)
+    assert_equal(44, @f.call)
+  end
+
+  def test_hash_to_readers
+    hash = {
+      :d => 33,
+      :e => Object.new,
+      :f => lambda { hash[:d] + 11 },
+    }
+
+    klass = Class.new {
+      include Quix::Vars
+      def initialize(hash)
+        hash_to_readers(hash, :d, :e, :f, :g)
+      end
+    }
+
+    obj = klass.new(hash)
+
+    assert_equal(hash[:d].object_id, obj.d.object_id)
+    assert_equal(hash[:e].object_id, obj.e.object_id)
+    assert_equal(hash[:f].object_id, obj.f.object_id)
+
+    assert_equal(nil, hash[:g])
+    assert_equal(nil.object_id, obj.g.object_id)
+
+    assert_equal(44, hash[:f].call)
+    assert_equal(44, obj.f.call)
   end
 
   class A
