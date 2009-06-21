@@ -110,15 +110,18 @@ class TestVars < Test::Unit::TestCase
     assert(!defined?(@d))
     assert(!defined?(@e))
     assert(!defined?(@f))
+    assert(!defined?(@g))
     
-    hash_to_ivs { hash }
+    hash_to_ivs(hash, :d, :e, :f, :g)
 
     assert_equal(hash[:d].object_id, @d.object_id)
     assert_equal(hash[:e].object_id, @e.object_id)
     assert_equal(hash[:f].object_id, @f.object_id)
 
+    assert_equal(hash[:g], nil)
+    assert_equal(hash[:g].object_id, nil.object_id)
+
     assert_equal(hash[:f].call, 44)
-    assert_nothing_raised { hash_to_ivs { nil } }
   end
 
   class A
@@ -126,14 +129,6 @@ class TestVars < Test::Unit::TestCase
       @x = 22
       @y = 33
     end
-  end
-
-  def test_pull_ivs
-    assert_equal(nil, Quix::Ruby.no_warnings { @x })
-    assert_equal(nil, Quix::Ruby.no_warnings { @y })
-    pull_ivs { A.new }
-    assert_equal(22, @x)
-    assert_equal(33, @y)
   end
 
   def test_config_to_hash
@@ -168,28 +163,5 @@ class TestVars < Test::Unit::TestCase
     assert_equal(hash[:d].object_id, hash[:d_object_id])
     assert_equal(hash[:e].object_id, hash[:e_object_id])
     assert_equal(hash[:f].object_id, hash[:f_object_id])
-  end
-
-  def test_error
-    obj = Class.new {
-      include Quix::Vars
-      def initialize
-        hash = { :x => 33 }
-        hash_to_ivs { hash }
-      end
-    }.new
-    assert_equal 33, obj.instance_eval { @x }
-
-    error = assert_raises(RuntimeError) {
-      Class.new {
-        include Quix::Vars
-        def initialize
-          hash = { :x => 33 }
-          @x = 99
-          hash_to_ivs { hash }
-        end
-      }.new
-    }
-    assert_match %r!already defined!, error.message
   end
 end

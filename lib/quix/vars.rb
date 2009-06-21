@@ -42,26 +42,18 @@ module Quix
       hash
     end
     
-    def pull_ivs(&block)
-      source = block.call
-      hash = block.call.instance_variables.inject(Hash.new) { |acc, iv|
-        acc.update(iv.to_s.sub(%r!\A@!, "") => source.instance_variable_get(iv))
+    def hash_to_ivs(hash, *ivs)
+      ivs.each { |name|
+        instance_variable_set("@#{name}", hash[name.to_sym])
       }
-      private__hash_to_ivs(hash, eval("self", block.binding))
-    end
-
-    def hash_to_ivs(&block)
-      if hash = block.call
-        private__hash_to_ivs(hash, eval("self", block.binding))
-      end
     end
 
     def locals_to_ivs(&block)
       hash = Hash.new
       eval_locals(block) { |name, value|
-        hash[name] = value
+        hash[name.to_sym] = value
       }
-      private__hash_to_ivs(hash, eval("self", block.binding))
+      hash_to_ivs(hash, *hash.keys)
     end
 
     def with_readers(hash, *args, &block)
@@ -105,18 +97,6 @@ module Quix
         #{Vars.argument_cache.value}
 
         [local_variables, binding]
-      }
-    end
-
-    def private__hash_to_ivs(hash, target)
-      target.instance_eval {
-        hash.each_pair { |name, value|
-          ivar = "@#{name}"
-          if instance_variable_defined? ivar
-            raise "instance variable already defined: `#{ivar}'"
-          end
-          instance_variable_set(ivar, value)
-        }
       }
     end
   end
