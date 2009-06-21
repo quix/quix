@@ -27,8 +27,10 @@ class TestPathname < Test::Unit::TestCase
     assert_equal("x/y", path_xy.to_s)
   end
 
-  def test_to_dos
-    assert_equal "a\\b", Pathname.new("a/b").to_dos
+  if File::ALT_SEPARATOR == "\\"
+    def test_to_dos
+      assert_equal "a\\b", Pathname.new("a/b").to_dos
+    end
   end
 
   def test_match
