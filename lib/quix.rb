@@ -3,6 +3,7 @@ require 'enumerator' if RUBY_VERSION <= "1.8.6"
 
 require 'quix/ext/array'
 require 'quix/ext/dir'
+require 'quix/ext/file'
 require 'quix/ext/hash'
 require 'quix/ext/kernel'
 require 'quix/ext/module'
