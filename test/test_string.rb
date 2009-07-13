@@ -4,10 +4,13 @@ require "quix/ext/string"
 
 class TestString < Test::Unit::TestCase
   def test_captures
+    called = false
     "  xx  yy ".captures(%r!\A\s*(\w+)\s+(\w+)\s*\Z!) { |a, b|
+      called = true
       assert_equal "xx", a
       assert_equal "yy", b
     }
+    assert called
   end
 
   def test_match_data
