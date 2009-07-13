@@ -138,4 +138,45 @@ class TestArray < Test::Unit::TestCase
     assert_equal true,  [3].nonempty?
     assert_equal true,  [3, 4].nonempty?
   end
+
+  def test_extract_options
+    obj = Class.new {
+      def f(*args)
+        opts = args.extract_options!
+        [args, opts]
+      end
+    }.new
+
+    args, opts = obj.f
+    assert_equal [], args
+    assert_equal Hash.new, opts
+
+    args, opts = obj.f(:a)
+    assert_equal [:a], args
+    assert_equal Hash.new, opts
+
+    args, opts = obj.f(:a, :b)
+    assert_equal [:a, :b], args
+    assert_equal Hash.new, opts
+
+    args, opts = obj.f(:a => 33)
+    assert_equal [], args
+    assert_equal({:a => 33}, opts)
+
+    args, opts = obj.f(:a => 33, :b => 44)
+    assert_equal [], args
+    assert_equal({:a => 33, :b => 44}, opts)
+
+    args, opts = obj.f(:x, :a => 33)
+    assert_equal [:x], args
+    assert_equal({:a => 33}, opts)
+
+    args, opts = obj.f(:x, :y, :a => 33)
+    assert_equal [:x, :y], args
+    assert_equal({:a => 33}, opts)
+
+    args, opts = obj.f(:x, :y, :a => 33, :b => 44)
+    assert_equal [:x, :y], args
+    assert_equal({:a => 33, :b => 44}, opts)
+  end
 end

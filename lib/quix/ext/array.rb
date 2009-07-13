@@ -78,4 +78,8 @@ class Array
   def nonempty?
     not empty?
   end
+
+  def extract_options!
+    last.is_a?(Hash) ? pop : Hash.new
+  end
 end
