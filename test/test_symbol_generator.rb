@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + "/common"
 
 require 'rbconfig'
 
-if Config::CONFIG["host"] =~ %r!darwin!
+if Config::CONFIG["host_os"] =~ %r!darwin! and RUBY_PLATFORM != "java"
   require "quix/symbol_generator"
 
   #
@@ -27,14 +27,20 @@ if Config::CONFIG["host"] =~ %r!darwin!
       histogram = Hash.new { |hash, key| hash[key] = 0 }
 
       [false, true].each { |track|
-        300.times { |n|
-          a, b = (0..1).map { Quix::SymbolGenerator.gensym }
-          obj = Stuff.new(track, a, b)
-          histogram[a] += 1
-          histogram[b] += 1
-          GC.start
+        result = catch(:done) {
+          200.times { |n|
+            a, b = (0..1).map { Quix::SymbolGenerator.gensym }
+            obj = Stuff.new(track, a, b)
+            histogram[a] += 1
+            histogram[b] += 1
+            if histogram.values.any? { |t| t > 1 }
+              throw :done, true
+            end
+            GC.start
+          }
+          false
         }
-        assert_equal(track, histogram.values.any? { |t| t > 1 })
+        assert_equal track, result
       }
     end
   end
