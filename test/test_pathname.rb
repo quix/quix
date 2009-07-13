@@ -5,6 +5,8 @@ require "quix/ext/pathname"
 class TestPathname < Test::Unit::TestCase
   include TestDataDir
 
+  TEST_FILE = Pathname(DATA_DIR) + "somefile"
+
   def test_ext
     assert_equal("a/b/c.o", Pathname.new("a/b/c.rb").ext("o").to_s)
     assert_equal("c.o", Pathname.new("c.f").ext("o").to_s)
@@ -58,5 +60,45 @@ class TestPathname < Test::Unit::TestCase
     assert_equal Pathname("a/b/c").slice(0..1), Pathname("a/b")
     assert_equal Pathname("a/b/c").slice(0..0), Pathname("a")
     assert_equal Pathname("a/b/c").slice(0...0), Pathname("")
+  end
+
+  def test_draft
+    contents = "abcd"
+    ret = TEST_FILE.draft { contents }
+    assert_equal contents, TEST_FILE.read
+    assert_equal contents, ret
+  end
+
+  def test_replace
+    TEST_FILE.draft { "abcd" }
+    ret = TEST_FILE.replace { |contents|
+      contents.sub("a", "x").sub("b", "y")
+    }
+    expected = "xycd"
+    assert_equal expected, TEST_FILE.read
+    assert_equal expected, ret
+  end
+
+  def test_binread
+    contents = "ab\r\ncd"
+    TEST_FILE.open("wb") { |f| f.print contents}
+    assert_equal "b\r\nc", TEST_FILE.binread(4, 1)
+  end
+
+  def test_bindraft
+    contents = "ab\r\ncd"
+    ret = TEST_FILE.bindraft { contents }
+    assert_equal contents, TEST_FILE.binread
+    assert_equal contents, ret
+  end
+
+  def test_binreplace
+    TEST_FILE.bindraft { "ab\r\ncd" }
+    ret = TEST_FILE.binreplace { |contents|
+      contents.sub("a", "x").sub("b", "y")
+    }
+    expected = "xy\r\ncd"
+    assert_equal expected, TEST_FILE.binread
+    assert_equal expected, ret
   end
 end
