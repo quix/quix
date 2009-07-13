@@ -26,5 +26,9 @@ class String
       end
     end_eval
   }
+
+  def nonempty?
+    not empty?
+  end
 end
 

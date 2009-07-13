@@ -40,4 +40,10 @@ class TestHash < Test::Unit::TestCase
     h[:x][:y] = 33
     assert_equal 33, h[:x][:y]
   end
+
+  def test_nonempty
+    assert_equal false, {}.nonempty?
+    assert_equal true,  {3 => 4}.nonempty?
+    assert_equal true,  {3 => 4, 5 => 6}.nonempty?
+  end
 end

@@ -74,4 +74,8 @@ class Array
     }
     result
   end
+
+  def nonempty?
+    not empty?
+  end
 end

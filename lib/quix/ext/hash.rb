@@ -20,4 +20,8 @@ class Hash
     }
     self
   end
+
+  def nonempty?
+    not empty?
+  end
 end

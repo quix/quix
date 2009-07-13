@@ -132,4 +132,10 @@ class TestArray < Test::Unit::TestCase
       [].split("a", "b", :capture => true)
     }
   end
+
+  def test_nonempty
+    assert_equal false, [].nonempty?
+    assert_equal true,  [3].nonempty?
+    assert_equal true,  [3, 4].nonempty?
+  end
 end

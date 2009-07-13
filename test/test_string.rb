@@ -19,4 +19,10 @@ class TestString < Test::Unit::TestCase
       assert_equal "axc", res
     }
   end
+
+  def test_nonempty
+    assert_equal false, "".nonempty?
+    assert_equal true,  "3".nonempty?
+    assert_equal true,  "34".nonempty?
+  end
 end
