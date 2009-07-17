@@ -88,5 +88,11 @@ class Pathname
     def join(*paths)
       new File.join(*paths)
     end
+
+    def glob_all(pattern, flags = 0, &block)
+      glob(pattern, flags | File::FNM_DOTMATCH, &block).reject { |path|
+        path.basename =~ %r!\A\.\.?\Z!
+      }
+    end
   end
 end

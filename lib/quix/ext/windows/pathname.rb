@@ -1,19 +1,15 @@
 
 class Pathname
   def to_dos
-    restring { |s|
-      s.gsub("/", File::ALT_SEPARATOR)
-    }
+    to_s.gsub("/", "\\")
   end
 
   #
-  # bug: Pathname("x:\\a\\b\\c").cleanpath #=> #<Pathname:x:\a/b/c>
-  # fix: Pathname("x:\\a\\b\\c").cleanpath #=> #<Pathname:x:/a/b/c>
+  # Forward-slash invariant for all Pathnames.
   #
-  alias_method :quix_original_cleanpath, :cleanpath
-  def cleanpath
-    quix_original_cleanpath.restring { |s|
-      s.gsub(File::ALT_SEPARATOR, "/")
-    }
+  alias_method :quix_original_initialize, :initialize
+  def initialize(*args, &block)
+    quix_original_initialize(*args, &block)
+    @path.gsub!("\\", "/")
   end
 end

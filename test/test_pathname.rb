@@ -1,9 +1,11 @@
 require File.dirname(__FILE__) + "/common"
 
 require "quix/ext/pathname"
+require "fileutils"
 
 class TestPathname < Test::Unit::TestCase
   include TestDataDir
+  include FileUtils
 
   TEST_FILE = Pathname(DATA_DIR) + "somefile"
 
@@ -31,7 +33,7 @@ class TestPathname < Test::Unit::TestCase
 
   if File::ALT_SEPARATOR == "\\"
     def test_to_dos
-      assert_equal Pathname("a\\b"), Pathname.new("a/b").to_dos
+      assert_equal "a\\b", Pathname.new("a/b").to_dos
     end
   end
 
@@ -100,5 +102,23 @@ class TestPathname < Test::Unit::TestCase
     expected = "xy\r\ncd"
     assert_equal expected, TEST_FILE.binread
     assert_equal expected, ret
+  end
+
+  def test_glob_all
+    data_dir = Pathname(DATA_DIR)
+
+    all_files = %w[a .b .c d].map { |t| data_dir + t }
+    normal_files = all_files.reject { |t| t.basename.to_s =~ %r!\A\.! }
+
+    touch(all_files)
+    
+    assert_equal normal_files.sort, Pathname.glob(data_dir + "*").sort
+    assert_equal all_files.sort, Pathname.glob_all(data_dir + "*").sort
+  end
+
+  if File::ALT_SEPARATOR == "\\"
+    def test_initialize
+      assert_equal "a/b/c", Pathname("a\\b\\c").to_s
+    end
   end
 end
