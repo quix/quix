@@ -1,6 +1,7 @@
 require File.dirname(__FILE__) + "/common"
 
 require 'quix/ext/dir'
+require 'quix/ext/pathname'
 
 class TestDir < Test::Unit::TestCase
   include FileUtils
@@ -10,5 +11,22 @@ class TestDir < Test::Unit::TestCase
     assert_equal(true, Dir.empty?(DATA_DIR))
     touch "#{DATA_DIR}/t"
     assert_equal(false, Dir.empty?(DATA_DIR))
+  end
+
+  def test_glob
+    file = "#{DATA_DIR}/a"
+    touch file
+
+    files = Dir.glob("#{DATA_DIR}/*")
+    assert_equal [file], files
+
+    files = Dir.glob(Pathname("#{DATA_DIR}/*"))
+    assert_equal [file], files
+
+    files = Dir.glob(["#{DATA_DIR}/*"])
+    assert_equal [file], files
+
+    files = Dir.glob([Pathname("#{DATA_DIR}/*")])
+    assert_equal [file], files
   end
 end
