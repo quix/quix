@@ -64,15 +64,24 @@ class TestPathname < Test::Unit::TestCase
     assert_equal Pathname("a/b/c").slice(0...0), Pathname("")
   end
 
-  def test_draft
+  def test_write
     contents = "abcd"
-    ret = TEST_FILE.draft { contents }
+    ret = TEST_FILE.write { contents }
     assert_equal contents, TEST_FILE.read
     assert_equal contents, ret
+
+    contents = "abcde"
+    ret = TEST_FILE.write(contents)
+    assert_equal contents, TEST_FILE.read
+    assert_equal contents, ret
+
+    assert_raises(ArgumentError) {
+      TEST_FILE.write(contents) { contents }
+    }
   end
 
   def test_replace
-    TEST_FILE.draft { "abcd" }
+    TEST_FILE.write { "abcd" }
     ret = TEST_FILE.replace { |contents|
       contents.sub("a", "x").sub("b", "y")
     }
@@ -87,15 +96,20 @@ class TestPathname < Test::Unit::TestCase
     assert_equal "b\r\nc", TEST_FILE.binread(4, 1)
   end
 
-  def test_bindraft
+  def test_binwrite
     contents = "ab\r\ncd"
-    ret = TEST_FILE.bindraft { contents }
+    ret = TEST_FILE.binwrite { contents }
+    assert_equal contents, TEST_FILE.binread
+    assert_equal contents, ret
+
+    contents = "ab\r\ncde"
+    ret = TEST_FILE.binwrite(contents)
     assert_equal contents, TEST_FILE.binread
     assert_equal contents, ret
   end
 
   def test_binreplace
-    TEST_FILE.bindraft { "ab\r\ncd" }
+    TEST_FILE.binwrite { "ab\r\ncd" }
     ret = TEST_FILE.binreplace { |contents|
       contents.sub("a", "x").sub("b", "y")
     }

@@ -35,30 +35,27 @@ class Pathname
   end
 
   def empty_directory?
-    Dir.empty?(self.to_s)
+    Dir.empty?(to_s)
   end
 
-  def draft(*open_flags)
-    open_flags = ["w"] if open_flags.empty?
-    contents = yield
+  def write(data = nil, open_flags = ["w"])
+    if data != nil and block_given?
+      raise ArgumentError, "cannot pass both data and block"
+    end
+    contents = data == nil ? yield : data
     open(*open_flags) { |out|
       out.print(contents)
     }
     contents
   end
 
-  def replace(open_flags_read = nil, open_flags_write = nil)
-    open_flags_read ||= ["r"]
-    open_flags_write ||= ["w"]
-
+  def replace(open_flags_read = ["r"], open_flags_write = ["w"])
     old_contents = open(*open_flags_read) { |f| f.read }
-
-    new_contents = nil
     open(*open_flags_write) { |f|
       new_contents = yield(old_contents)
       f.write(new_contents)
+      new_contents
     }
-    new_contents
   end
 
   BINARY_ENCODING = RUBY_VERSION < "1.9" ? "" : ":ASCII-8BIT"
@@ -76,8 +73,8 @@ class Pathname
     end
   end
 
-  def bindraft(&block)
-    draft(BINARY_WRITE_FLAGS, &block)
+  def binwrite(data = nil, &block)
+    write(data, BINARY_WRITE_FLAGS, &block)
   end
 
   def binreplace(&block)
