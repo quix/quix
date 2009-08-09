@@ -81,6 +81,12 @@ class Pathname
     replace(BINARY_READ_FLAGS, BINARY_WRITE_FLAGS, &block)
   end
 
+  def copy_to(dest, preserve = false)
+    require 'fileutils'
+    FileUtils.copy_entry(to_s, dest, preserve)
+    self.class.new(dest)
+  end
+
   class << self
     def join(*paths)
       new File.join(*paths)

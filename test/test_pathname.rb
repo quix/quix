@@ -135,4 +135,14 @@ class TestPathname < Test::Unit::TestCase
       assert_equal "a/b/c", Pathname("a\\b\\c").to_s
     end
   end
+
+  def test_copy_to
+    source, dest = %w[source dest].map { |f| Pathname(DATA_DIR) + f }
+    contents = "abab"
+    source.write(contents)
+    assert(!dest.exist?)
+    source.copy_to(dest)
+    assert contents, source.read
+    assert contents, dest.read
+  end
 end
