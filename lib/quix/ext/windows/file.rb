@@ -8,12 +8,12 @@ class File
         # For case-insensitive systems, we must move the file elsewhere
         # before changing case.
         #
-        temp = dest + ".rename.temp"
-        rename(source, temp)
+        temp = "#{dest}.rename.temp"
+        quix_original_rename(source, temp)
         begin
-          rename(temp, dest)
+          quix_original_rename(temp, dest)
         rescue
-          rename(temp, source)
+          quix_original_rename(temp, source)
           raise
         end
       else
