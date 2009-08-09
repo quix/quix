@@ -87,6 +87,11 @@ class Pathname
     self.class.new(dest)
   end
 
+  def move_to(dest)
+    rename(dest)
+    self.class.new(dest)
+  end
+
   class << self
     def join(*paths)
       new File.join(*paths)

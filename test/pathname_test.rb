@@ -159,4 +159,15 @@ class TestPathname < Test::Unit::TestCase
     assert_equal contents, dest.read
     assert_equal dest, result
   end
+
+  def test_move_to
+    source, dest = %w[source dest].map { |f| Pathname(DATA_DIR) + f }
+    contents = "abab"
+    source.write(contents)
+    assert(!dest.exist?)
+    result = source.move_to(dest)
+    assert(!source.exist?)
+    assert_equal contents, dest.read
+    assert_equal dest, result
+  end
 end
