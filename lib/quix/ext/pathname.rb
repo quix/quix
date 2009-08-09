@@ -97,5 +97,9 @@ class Pathname
         path.basename =~ %r!\A\.\.?\Z!
       }
     end
+
+    def glob_files(*args)
+      glob_all(*args).select { |file| file.file? }
+    end
   end
 end

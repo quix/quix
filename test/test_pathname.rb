@@ -130,6 +130,19 @@ class TestPathname < Test::Unit::TestCase
     assert_equal all_files.sort, Pathname.glob_all(data_dir + "*").sort
   end
 
+  def test_glob_files
+    data_dir = Pathname(DATA_DIR)
+
+    s = %w[a .b .c d].map { |t| data_dir + t }
+    touch s[0]
+    mkdir s[1]
+    touch s[2]
+    mkdir s[3]
+    
+    assert_equal s.sort, Pathname.glob_all(data_dir + "*").sort
+    assert_equal [s[0], s[2]].sort, Pathname.glob_files(data_dir + "*").sort
+  end
+
   if File::ALT_SEPARATOR == "\\"
     def test_initialize
       assert_equal "a/b/c", Pathname("a\\b\\c").to_s
