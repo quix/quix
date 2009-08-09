@@ -17,8 +17,9 @@ class Pathname
   end
 
   def explode
-    to_s.split(SEPARATOR_PAT).map { |path|
-      self.class.new path
+    # initialize() enforces forward slashes
+    to_s.split('/').map { |path|
+      self.class.new(path)
     }
   end
 
