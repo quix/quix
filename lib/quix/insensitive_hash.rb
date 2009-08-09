@@ -8,16 +8,18 @@ module Quix
 
     DataPair = Struct.new(:key, :value)
 
-    def to_neutral_key(key)
+    def transform_key(key)
       key.to_s.downcase
     end
 
     def dup
-      result = InsensitiveHash.new
+      result = self.class.new
       each_pair { |key, value|
         result[key] = value
       }
-      result.taint if self.tainted?
+      if tainted?
+        result.taint 
+      end
       result
     end
 
@@ -79,7 +81,7 @@ module Quix
     end
 
     def [](key)
-      if data = @hash[to_neutral_key(key)]
+      if data = @hash[transform_key(key)]
         data.value
       elsif @default
         @default
@@ -93,7 +95,7 @@ module Quix
     end
 
     def []=(key, value)
-      @hash[to_neutral_key(key)] = DataPair.new(key, value)
+      @hash[transform_key(key)] = DataPair.new(key, value)
       value
     end
 
@@ -116,7 +118,7 @@ module Quix
     end
 
     def delete(key)
-      neutral_key = to_neutral_key(key)
+      neutral_key = transform_key(key)
       if @hash.has_key?(neutral_key)
         @hash.delete(neutral_key).value
       elsif block_given?
@@ -127,9 +129,9 @@ module Quix
     end
     
     def delete_if
-      dup.each_pair { |key, value|
-        if yield(key, value)
-          @hash.delete(to_neutral_key(key))
+      keys.each { |key|
+        if yield key, self[key]
+          @hash.delete(transform_key(key))
         end
       }
       self
@@ -165,7 +167,7 @@ module Quix
     def fetch(key, *args, &block)
       case args.size
       when 0
-        @hash.fetch(to_neutral_key(key)) {
+        @hash.fetch(transform_key(key)) {
           if block
             return block.call(key)
           else
@@ -174,7 +176,7 @@ module Quix
           end
         }.value
       when 1
-        @hash.fetch(to_neutral_key(key), args.first)
+        @hash.fetch(transform_key(key), args.first)
       else
         raise ArgumentError,
         "wrong number of arguments (#{args.size + 1} for 2)"
@@ -182,7 +184,7 @@ module Quix
     end
 
     def has_key?(key)
-      @hash.has_key?(to_neutral_key(key))
+      @hash.has_key?(transform_key(key))
     end
 
     def has_value?(target)
@@ -274,7 +276,7 @@ module Quix
       changed = false
       dup.each_pair { |key, value|
         if yield(key, value)
-          @hash.delete(to_neutral_key(key))
+          @hash.delete(transform_key(key))
           changed = true
         end
       }
