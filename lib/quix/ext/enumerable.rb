@@ -16,11 +16,21 @@ module Enumerable
     result
   end
 
+  #
+  # build_hash appears in Gavin Sinclair's extensions package.
+  #
+  # This implementation is slightly different in that it skips yield
+  # results of nil.
+  #
   def build_hash
-    inject(Hash.new) { |acc, elem|
-      result = yield(elem)
-      acc.merge!(result[0] => result[1])
+    result = Hash.new
+    each { |elem|
+      pair = yield(elem)
+      unless pair.nil?
+        result[pair[0]] = pair[1]
+      end
     }
+    result
   end
 
   def take_until(&block)

@@ -17,7 +17,7 @@ class TestEnumerable < Test::Unit::TestCase
     assert_equal expected, computed
   end
 
-  def test_build_hash
+  def test_build_hash_1
     data = 3..5
     expected = {
       3 => 9,
@@ -26,6 +26,22 @@ class TestEnumerable < Test::Unit::TestCase
     }
     computed = data.build_hash { |elem|
       [elem, elem**2]
+    }
+    assert_equal expected, computed
+  end
+
+  def test_build_hash_2
+    data = 3..5
+    expected = {
+      3 => 9,
+      5 => 25
+    }
+    computed = data.build_hash { |elem|
+      if elem == 4
+        nil
+      else
+        [elem, elem**2]
+      end
     }
     assert_equal expected, computed
   end
