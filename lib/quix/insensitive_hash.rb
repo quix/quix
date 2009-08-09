@@ -115,9 +115,14 @@ module Quix
       @default_proc
     end
 
-    def delete(key, &block)
-      if result = @hash.delete(to_neutral_key(key), &block)
-        result.value rescue result
+    def delete(key)
+      neutral_key = to_neutral_key(key)
+      if @hash.has_key?(neutral_key)
+        @hash.delete(neutral_key).value
+      elsif block_given?
+        yield key
+      else
+        nil
       end
     end
     
