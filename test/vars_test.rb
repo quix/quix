@@ -3,6 +3,8 @@ require File.dirname(__FILE__) + "/common"
 require 'quix/vars'
 require 'quix/ruby'
 
+stray_toplevel_local = 33
+
 class TestVars < Test::Unit::TestCase
   include Quix::Vars
 
@@ -151,5 +153,7 @@ class TestVars < Test::Unit::TestCase
     assert_equal(hash[:d].object_id, hash[:d_object_id])
     assert_equal(hash[:e].object_id, hash[:e_object_id])
     assert_equal(hash[:f].object_id, hash[:f_object_id])
+
+    assert(!hash.has_key?(:stray_toplevel_local))
   end
 end

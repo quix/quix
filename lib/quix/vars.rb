@@ -71,11 +71,11 @@ module Quix
         attr_accessor :argument_cache
         def eval_code
           code = <<-__b516c3a760b9758a47463bdb3c316bab
-            lambda {
+            class << Object.new
               #{::Quix::Vars::Private.argument_cache.value}
 
               [local_variables, binding]
-            }.call
+            end
           __b516c3a760b9758a47463bdb3c316bab
           eval(code, TOPLEVEL_BINDING)
         end
