@@ -6,14 +6,14 @@ class Hash
     end
   end
 
-  def key_sorted_each_pair
+  def each_pair_sort_keys
     keys.sort.each { |key|
       yield key, self[key]
     }
     self
   end
 
-  def value_sorted_each_pair
+  def each_pair_sort_values
     inverted = invert
     values.sort.each { |value|
       yield inverted[value], value

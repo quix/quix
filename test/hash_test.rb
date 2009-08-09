@@ -11,13 +11,13 @@ class TestHash < Test::Unit::TestCase
     }
 
     memo = Array.new
-    s.key_sorted_each_pair { |key, value|
+    s.each_pair_sort_keys { |key, value|
       memo << key
     }
     assert_equal %w[x y z], memo
 
     memo = Array.new
-    s.value_sorted_each_pair { |key, value|
+    s.each_pair_sort_values { |key, value|
       memo << key
     }
     assert_equal %w[y x z], memo
