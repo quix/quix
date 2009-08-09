@@ -1,5 +1,6 @@
 
 require 'quix/ext/array'
+require 'quix/ext/class'
 require 'quix/ext/dir'
 require 'quix/ext/enumerable'
 require 'quix/ext/file'
