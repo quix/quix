@@ -10,13 +10,11 @@ require 'quix/ext/object'
 require 'quix/ext/pathname'
 require 'quix/ext/string'
 
-require 'quix/assert'
 require 'quix/diagnostic'
 require 'quix/loop_with'
 require 'quix/vars'
 
 class Object
-  include Quix::Assert
   include Quix::Diagnostic
   include Quix::LoopWith
   include Quix::Vars
