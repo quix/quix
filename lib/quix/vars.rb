@@ -12,8 +12,11 @@ module Quix
     def hash_to_locals(&block)
       if hash = block.call
         hash.each_pair { |name, value|
-          Private.argument_cache.value = value
-          eval("#{name} = #{Private.name}.argument_cache.value", block.binding)
+          ::Quix::Vars.argument_cache.value = value
+          eval(
+            "#{name} = #{::Quix::Vars.name}.argument_cache.value",
+            block.binding
+          )
         }
       end
     end
@@ -27,8 +30,8 @@ module Quix
     end
 
     def each_config_pair(code, &block)
-      Private.argument_cache.value = code
-      locals, bind = Private.eval_code
+      ::Quix::Vars.argument_cache.value = code
+      locals, bind = ::Quix::Vars.eval_code
       locals.each { |var|
         yield(var.to_sym, eval(var.to_s, bind))
       }
@@ -65,20 +68,21 @@ module Quix
       }
     end
 
-    module Private
-      @argument_cache = ThreadLocal.new
-      class << self
-        attr_accessor :argument_cache
-        def eval_code
-          code = <<-__b516c3a760b9758a47463bdb3c316bab
-            class << Object.new
-              #{::Quix::Vars::Private.argument_cache.value}
+    @argument_cache = ThreadLocal.new
 
-              [local_variables, binding]
-            end
-          __b516c3a760b9758a47463bdb3c316bab
-          eval(code, TOPLEVEL_BINDING)
-        end
+    class << self
+      attr_accessor :argument_cache
+
+      def eval_code
+        # heredoc is workaround for rcov bug
+        code = <<-code_end
+          class << Object.new
+            #{::Quix::Vars.argument_cache.value}
+
+            [local_variables, binding]
+          end
+        code_end
+        eval(code, TOPLEVEL_BINDING)
       end
     end
   end
