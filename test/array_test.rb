@@ -179,4 +179,10 @@ class TestArray < Test::Unit::TestCase
     assert_equal [:x, :y], args
     assert_equal({:a => 33, :b => 44}, opts)
   end
+
+  def test_only
+    assert_equal 33, [33].only
+    assert_raises(IndexError) { [33, 44].only }
+    assert_raises(IndexError) { [].only }
+  end
 end

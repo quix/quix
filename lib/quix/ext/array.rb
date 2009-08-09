@@ -82,4 +82,12 @@ class Array
   def extract_options!
     last.is_a?(Hash) ? pop : Hash.new
   end
+
+  # Lifted from Gavin Sinclair's extensions package
+  def only
+    unless size == 1
+      raise IndexError, "array size is not equal to 1"
+    end
+    first
+  end
 end
