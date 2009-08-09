@@ -15,6 +15,10 @@ require 'quix/diagnostic'
 require 'quix/loop_with'
 require 'quix/vars'
 
+module Quix
+  VERSION = "0.1.0"
+end
+
 class Object
   include Quix::Diagnostic
   include Quix::LoopWith
