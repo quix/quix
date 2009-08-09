@@ -9,7 +9,7 @@ module Quix
     DataPair = Struct.new(:key, :value)
 
     def to_neutral_key(key)
-      key.downcase rescue key
+      key.to_s.downcase
     end
 
     def dup
@@ -163,18 +163,22 @@ module Quix
     alias_method :eql?, :==
     
     def fetch(key, *args, &block)
-      result = (
-        case args.size
-        when 0
-          @hash.fetch(to_neutral_key(key), &block)
-        when 1
-          @hash.fetch(to_neutral_key(key), args.first)
-        else
-          raise ArgumentError,
-          "wrong number of arguments (#{args.size + 1} for 2)"
-        end
-      )
-      result.value rescue result
+      case args.size
+      when 0
+        @hash.fetch(to_neutral_key(key)) {
+          if block
+            return block.call(key)
+          else
+            ex = RUBY_VERSION < "1.9" ? IndexError : KeyError
+            raise ex, "key not found"
+          end
+        }.value
+      when 1
+        @hash.fetch(to_neutral_key(key), args.first)
+      else
+        raise ArgumentError,
+        "wrong number of arguments (#{args.size + 1} for 2)"
+      end
     end
 
     def has_key?(key)
@@ -252,7 +256,11 @@ module Quix
     end
 
     def rehash
-      @hash.rehash
+      result = self.class.new
+      each_pair { |key, value|
+        result[key] = value
+      }
+      @hash.replace(result.instance_eval { @hash })
       self
     end
 
