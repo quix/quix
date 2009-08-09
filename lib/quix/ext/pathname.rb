@@ -58,9 +58,9 @@ class Pathname
     }
   end
 
-  BINARY_ENCODING = RUBY_VERSION < "1.9" ? "" : ":ASCII-8BIT"
-  BINARY_READ_FLAGS = "rb" + BINARY_ENCODING
-  BINARY_WRITE_FLAGS = "wb" + BINARY_ENCODING
+  binary_encoding = RUBY_VERSION < "1.9" ? "" : ":ASCII-8BIT"
+  BINARY_READ_FLAGS = "rb" + binary_encoding
+  BINARY_WRITE_FLAGS = "wb" + binary_encoding
 
   unless method_defined?(:binread)
     def binread(length = nil, offset = nil)

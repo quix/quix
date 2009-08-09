@@ -145,7 +145,7 @@ class TestPathname < Test::Unit::TestCase
 
   if File::ALT_SEPARATOR == "\\"
     def test_initialize
-      assert_equal "a/b/c", Pathname("a\\b\\c").to_s
+      assert_equal Pathname("a/b/c"), Pathname("a\\b\\c")
     end
   end
 
@@ -154,8 +154,9 @@ class TestPathname < Test::Unit::TestCase
     contents = "abab"
     source.write(contents)
     assert(!dest.exist?)
-    source.copy_to(dest)
-    assert contents, source.read
-    assert contents, dest.read
+    result = source.copy_to(dest)
+    assert_equal contents, source.read
+    assert_equal contents, dest.read
+    assert_equal dest, result
   end
 end
