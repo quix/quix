@@ -22,8 +22,7 @@ module Enumerable
   # This implementation is slightly different in that it skips yield
   # results of nil.
   #
-  def build_hash
-    result = Hash.new
+  def build_hash(result = Hash.new)
     each { |elem|
       pair = yield(elem)
       unless pair.nil?

@@ -37,7 +37,7 @@ module Quix
       end
       
       def no_warnings(&block)
-        with_warnings(false, &block)
+        with_warnings(nil, &block)
       end
     end
   end

@@ -46,6 +46,16 @@ class TestEnumerable < Test::Unit::TestCase
     assert_equal expected, computed
   end
 
+  def test_build_hash_3
+    actual = [:x, :y].build_hash(:z => 55) { |e| [e, 33] }
+    expected = {
+      :x => 33,
+      :y => 33,
+      :z => 55,
+    }
+    assert_equal expected, actual
+  end
+
   def test_take_drop
     data = 3..8
     

@@ -16,7 +16,7 @@ class TestArray < Test::Unit::TestCase
   end
     
   def test_ords
-    t = %w[a b c d e f g h i j].map { |t| t.to_sym }
+    t = %w[a b c d e f g h i j].map { |x| x.to_sym }
 
     assert_equal :a, t.first
     assert_equal :b, t.second

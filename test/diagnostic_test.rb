@@ -10,7 +10,13 @@ class TestDiagnostic < Test::Unit::TestCase
     out = StringIO.new
     desc = "zzz"
     a = 33
-    show(desc, out) {%{a}}
+    previous = $VERBOSE
+    $VERBOSE = false
+    begin
+      show(desc, out) {%{a}}
+    ensure
+      $VERBOSE = previous
+    end
     lines = out.string.split("\n").map { |t| t.chomp }
     assert_equal desc, lines[0]
     assert_match %r!\A\s*a\s+=>\s*#{a}\s*\Z!, lines[1]
@@ -46,7 +52,13 @@ class TestDiagnostic < Test::Unit::TestCase
       assert_equal 1, memo.size
       assert_equal :data, memo.first
       assert_equal true, debugging?
-      trace {%{a}}
+      previous = $VERBOSE
+      $VERBOSE = false
+      begin
+        trace {%{a}}
+      ensure
+        $VERBOSE = previous
+      end
       assert_match %r!\A\s*a\s+=>\s*#{a}\s*\Z!, $stderr.string
     ensure
       $DEBUG = prev_debug

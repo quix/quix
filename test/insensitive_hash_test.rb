@@ -125,7 +125,7 @@ class TestInsensitiveHash < Test::Unit::TestCase
     assert_equal([], x[22])
     assert_not_same(x[22], x[22])
 
-    x = InsensitiveHash.new{|h,k| z = k; h[k] = k*2}
+    x = InsensitiveHash.new{|h,k_| z = k_; h[k_] = k_*2}
     z = 0
     assert_equal(44, x[22])
     assert_equal(22, z)

@@ -10,55 +10,55 @@ module Quix
   #
   module AttrLazy
     def attr_lazy(name, &block)
-      AttrLazy.define_attribute(class << self ; self ; end, name, false, &block)
+      AttrLazy.define_reader(class << self ; self ; end, name, &block)
     end
 
     def attr_lazy_accessor(name, &block)
-      AttrLazy.define_attribute(class << self ; self ; end, name, true, &block)
+      attr_lazy(name, &block)
+      AttrLazy.define_writer(class << self ; self ; end, name, &block)
     end
 
     class << self
       def included(mod)
         (class << mod ; self ; end).class_eval do
           def attr_lazy(name, &block)
-            AttrLazy.define_attribute(self, name, false, &block)
+            AttrLazy.define_reader(self, name, &block)
           end
 
           def attr_lazy_accessor(name, &block)
-            AttrLazy.define_attribute(self, name, true, &block)
+            attr_lazy(name, &block)
+            AttrLazy.define_writer(self, name, &block)
           end
         end
       end
 
-      def define_attribute(klass, name, define_writer, &block)
-        klass.class_eval do
-          # Factoring this code is possible but convoluted, requiring
-          # the definition of a temporary method.
+      def define_evaluated_reader(instance, name, value)
+        (class << instance ; self ; end).class_eval do
+          remove_method name rescue nil
+          define_method name do
+            value
+          end
+        end
+      end
 
+      def define_reader(klass, name, &block)
+        klass.class_eval do
           remove_method name rescue nil
           define_method name do
             value = instance_eval(&block)
-            (class << self ; self ; end).class_eval do
-              remove_method name rescue nil
-              define_method name do
-                value
-              end
-            end
+            AttrLazy.define_evaluated_reader(self, name, value)
             value
           end
+        end
+      end
 
-          if define_writer
-            writer = "#{name}="
-            remove_method writer rescue nil
-            define_method writer do |value|
-              (class << self ; self ; end).class_eval do
-                remove_method name rescue nil
-                define_method name do
-                  value
-                end
-              end
-              value
-            end
+      def define_writer(klass, name, &block)
+        klass.class_eval do
+          writer = "#{name}="
+          remove_method writer rescue nil
+          define_method writer do |value|
+            AttrLazy.define_evaluated_reader(self, name, value)
+            value
           end
         end
       end

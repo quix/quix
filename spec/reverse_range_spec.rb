@@ -117,7 +117,7 @@ describe "ReverseRange" do
       }
   
       outside = lambda { |i|
-        not (@range === i)
+        !(@range === i)
       }
   
       @range.begin.downto(@range.end, &inside)
