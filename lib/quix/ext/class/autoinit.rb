@@ -1,8 +1,5 @@
 
-require 'quix/temp_method'
-
 class Class
-
   #
   # autoinit is found in Gavin Sinclair's extensions package.  The
   # following is my own implementation which does not use eval().
@@ -11,12 +8,11 @@ class Class
   # package.
   #
   def autoinit(*names, &block)
-    # TODO: jettison 1.8.6; use |&block|
-
     if block and not [-1, 0].include?(block.arity)
       raise ArgumentError, "autoinit block must have no arguments"
     end
 
+    # TODO: jettison 1.8.6; use |*values, &init_block|
     define_method :initialize do |*values|
       unless values.size == names.size
         raise ArgumentError,
@@ -26,14 +22,16 @@ class Class
         instance_variable_set("@#{name}", value)
       }
       if block
-        Quix::TempMethod.call_temp_method(self, :__autoinit, &block)
+        (class << self ; self ; end).class_eval do
+          define_method :__autoinit, &block
+        end
+        __autoinit
       end
     end
   end
 
   def autoinit_options(*keys, &block)
-    # TODO: jettison 1.8.6; use |&block|
-
+    # TODO: jettison 1.8.6; use |*args, &init_block|
     define_method :initialize do |*args|
       options = args.last.is_a?(Hash) ? args.pop : Hash.new
       expected_args_size = (
@@ -56,8 +54,10 @@ class Class
         instance_variable_set("@#{key}", value)
       }
       if block
-        Quix::TempMethod.
-        call_temp_method(self, :__autoinit_options, *args, &block)
+        (class << self ; self ; end).class_eval do
+          define_method :__autoinit_options, &block
+        end
+        __autoinit_options(*args)
       end
     end
   end
