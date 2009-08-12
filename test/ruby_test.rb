@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/common"
+require File.dirname(__FILE__) + '/quix_test_base'
 
 require 'stringio'
 require 'quix/ruby'
@@ -24,9 +24,6 @@ class TestRuby < Test::Unit::TestCase
       begin
         Config::CONFIG["host"] = "mingw"
         Ruby.no_warnings {
-          Ruby.module_eval {
-            remove_const :EXECUTABLE
-          }
           load File.dirname(__FILE__) + "/../lib/quix/ruby.rb"
         }
         assert_nothing_raised {
@@ -36,5 +33,20 @@ class TestRuby < Test::Unit::TestCase
         Config::CONFIG["host"] = previous
       end
     end
+  end
+
+  def test_capture
+    assert_equal "77", Quix::Ruby.run_code_and_capture("print(33 + 44)")
+
+    file = "#{DATA_DIR}/abc"
+    File.open(file, "w") { |f|
+      f.puts("puts(33 + 44)")
+      f.puts("puts('abc')")
+    }
+    assert_equal "77\nabc\n", Quix::Ruby.run_file_and_capture(file)
+
+    assert_raises(RuntimeError) {
+      Quix::Ruby.run_file_and_capture("asldfkjdf")
+    }
   end
 end
