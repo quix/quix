@@ -32,6 +32,17 @@ module Enumerable
     result
   end
 
+  def map_select
+    result = []
+    each { |elem|
+      value = yield elem
+      unless value.nil?
+        result << value
+      end
+    }
+    result
+  end
+
   def take_until(&block)
     take_while { |elem|
       not block.call(elem)

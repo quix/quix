@@ -70,4 +70,11 @@ class TestEnumerable < Test::Unit::TestCase
     assert_equal [], data.drop_while { true }
     assert_equal [], data.drop_until { |t| t == 999 }
   end
+
+  def test_map_select
+    assert_equal [9, 16, 25], [3, 4, 5].map_select { |x| x**2 }
+    assert_equal %w[a c], %w[a b c d].map_select { |s| s[%r!\A(a|c)\Z!, 1] }
+    assert_equal [], (3..8).to_a.map_select { nil }
+    assert_equal [9, 16, 25], (3..8).map_select { |e| e < 6 ? e**2 : nil }
+  end
 end
