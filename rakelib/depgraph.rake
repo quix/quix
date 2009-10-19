@@ -1,11 +1,6 @@
 
 task :depgraph, :root do |t, args|
-  begin
-    require 'graphviz'
-  rescue LoadError
-    require 'rubygems'
-    require 'graphviz'
-  end
+  require 'graphviz'
 
   GraphViz.options(:use => "dot")
 

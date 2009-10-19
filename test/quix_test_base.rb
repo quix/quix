@@ -1,8 +1,8 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
+$LOAD_PATH.unshift File.dirname(__FILE__) + '/../devel'
 
 require "fileutils"
 require "test/unit"
-require "rubygems"
 require "rake"
 
 RakeFileUtils.verbose_flag = false
