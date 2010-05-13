@@ -78,10 +78,10 @@ class TestInsensitiveHash < Test::Unit::TestCase
       "c" => 55,
     })
     
-    assert 33, s["a"]
-    assert 33, s["A"]
-    assert 44, s["b"]
-    assert 44, s["B"]
+    assert_equal 33, s["a"]
+    assert_equal 33, s["A"]
+    assert_equal 44, s["b"]
+    assert_equal 44, s["B"]
     
     t = {
       "a" => 33,
@@ -98,7 +98,7 @@ class TestInsensitiveHash < Test::Unit::TestCase
       "c" => 55,
     })
 
-    assert ["A", "B", "c"], u.values_at(33, 44, 55)
+    assert_equal [33, 44, 55], u.values_at("A", "B", "c")
     assert_block { s == u }
     assert_block { u == s }
     assert_block { t != u }
